@@ -23,6 +23,29 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  admob_flutter: ^1.0.1
+
+  # To be able to use flutter localizations:
+  flutter_localizations:
+    sdk: flutter
+  # to add localized text to the application:
+  intl: ^0.16.1
+
+  # A package that extends the functionality of InheritedWidget
+  provider: ^4.3.2+3
+
+  # To get a path to the app's storage (cache and permanent data):
+  path_provider: ^1.6.24
+
+  # To get and set user preferences (like configuration:)
+  shared_preferences: ">=0.5.12+4 <2.0.0"
+
+  # To launch urls:
+  url_launcher: ^5.7.10
+
+  # To send emails:
+  flutter_email_sender: ^4.0.0
+
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -32,12 +55,14 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_launcher_icons:
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter.
 flutter:
+  generate: true
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
@@ -74,3 +99,7 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+flutter_icons:
+  image_path: "icons/app-icon.png"
+  android: true
+  ios: true

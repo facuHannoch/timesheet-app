@@ -1,0 +1,120 @@
+{
+    "@@locale": "es",
+
+    "app_name": "Dado",
+    "@app_name": {},
+
+    "app_title": "Tirada de Dados",
+    "@app_title": {},
+
+    "total": "Total",
+    "@total": {},
+
+    "monday": "lunes",
+    "@monday": {},
+    "tuesday": "mrtes",
+    "@tuesday": {},
+    "wednesday": "miércoles",
+    "@wednesday": {},
+    "thursday": "jueves",
+    "@thursday": {},
+    "friday": "viernes",
+    "@friday": {},
+    "saturday": "sábado",
+    "@saturday": {},
+    "sunday": "domingo",
+    "@sunday": {},
+    
+    
+
+
+    "table_date_label": "Fecha",
+    "@table_date_label": {},
+
+    "table_day_name_label": "Día",
+    "@table_day_name_label": {},
+
+    "table_schedule_label": "Horario",
+    "@table_schedule_label": {},
+
+    "table_workplace_label": "Lugar",
+    "@table_workplace_label": {},
+
+    "table_price_per_hour_label": "$/hora",
+    "@table_price_per_hour_label": {},
+
+
+
+
+    "new_item_title": "New item",
+    "@new_item_title": {},
+
+    "new_item_date_label_title": "Date",
+    "@new_item_date_label_title": {},
+
+    "new_item_place_label_title": "Place",
+    "@new_item_place_label_title": {},
+
+    "new_item_hours_label_title": "Hours",
+    "@new_item_hours_label_title": {},
+
+    "hours_input_start_hour_label": "Start hour",
+    "@hours_input_start_hour_label": {},
+
+    "hours_input_end_hour_label": "End hour",
+    "@hours_input_end_hour_label": {},
+
+    "hours_input_is_not_number_label": "Write a number",
+    "@hours_input_is_not_number_label": {},
+
+    "hours_input_max_24_label": "Max is 24",
+    "@hours_input_max_24_label": {},
+
+    "hours_input_min_0_label": "Min is 0",
+    "@hours_input_min_0_label": {},
+
+    "new_item_price_per_hour_label_title": "Price per hour",
+    "@new_item_price_per_hour_label_title": {},
+
+    "hour_price_is_not_number_label": "Field is not a number",
+    "@hour_price_is_not_number_label": {},
+
+
+
+
+
+
+    "settings_screen_title": "Configuración",
+    "@settings_screen_title": {},
+
+    "category_personalization": "Personalización",
+    "@category_personalization": {},
+
+    "choose_primary_color": "Elige el color principal de la aplicación",
+    "@choose_primary_color": {},
+
+
+    "visit_our_website": "Visita nuestro sitio web",
+    "@visit_our_website": {},
+    "visit_our_website_description": "Visita nuestro sitio web para ver más de nuestras apps.",
+    "@visit_our_website_description": {},
+    "give_feedback": "Enviar comentarios",
+    "@give_feedback": {},
+    "give_feedback_description": "Dinos que piensas de nuestra app o alguna sugerencia que tengas",
+    "@give_feedback_description": {},
+
+    "follow_us_instagram": "Síguenos en Instagrram",
+    "@follow_us_instagram": {},
+    "follow_us_instagram_description": "Sé el primero en saber de nuevas aplicaciones y actualizaciones",
+    "@follow_us_instagram_description": {},
+
+    "follow_us_facebook": "Síguenos en Facebook",
+    "@follow_us_facebook": {},
+    "follow_us_facebook_description": "Mantente informado sobre nosotros.",
+    "@follow_us_facebook_description": {},
+
+    "follow_us_twitter": "Síguenos en Twitter",
+    "@follow_us_twitter": {},
+    "follow_us_twitter_description": "Síguenos para no perderte de nada.",
+    "@follow_us_twitter_description": {}
+}

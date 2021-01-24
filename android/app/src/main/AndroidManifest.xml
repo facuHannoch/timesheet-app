@@ -9,6 +9,18 @@
         android:name="io.flutter.app.FlutterApplication"
         android:label="hours_tracker"
         android:icon="@mipmap/ic_launcher">
+
+
+        <!-- This is to disable firebase data recolection: -->
+        <!-- <meta-data 
+            android:name="firebase_analytics_collection_enabled" 
+            android:value="false" /> -->
+
+        <!-- Sample AdMob app ID: ca-app-pub-3940256099942544~3347511713 -->
+        <meta-data
+          android:name="com.google.android.gms.ads.APPLICATION_ID"
+          android:value="ca-app-pub-3940256099942544~3347511713" />
+
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
