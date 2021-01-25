@@ -10,20 +10,29 @@
     "total": "Total",
     "@total": {},
 
-    "monday": "monday",
+    "total_hours": "Hours",
+    "@total_hours": {},
+
+    "monday": "Monday",
     "@monday": {},
-    "tuesday": "tuesday",
+    "tuesday": "Tuesday",
     "@tuesday": {},
-    "wednesday": "wednesday",
+    "wednesday": "Wednesday",
     "@wednesday": {},
-    "thursday": "thursday",
+    "thursday": "Thursday",
     "@thursday": {},
-    "friday": "friday",
+    "friday": "Friday",
     "@friday": {},
-    "saturday": "saturday",
+    "saturday": "Saturday",
     "@saturday": {},
-    "sunday": "sunday",
+    "sunday": "Sunday",
     "@sunday": {},
+
+    "month": "month",
+    "@month": {},
+
+    "year": "year",
+    "@year": {},
     
 
 
@@ -42,6 +51,12 @@
 
     "table_price_per_hour_label": "$/hour",
     "@table_price_per_hour_label": {},
+
+    "table_edit_label": "Edit",
+    "@table_edit_label": {},
+
+    "table_delete_label": "Delete",
+    "@table_delete_label": {},
 
 
 
@@ -80,6 +95,9 @@
     "hour_price_is_not_number_label": "Field is not a number",
     "@hour_price_is_not_number_label": {},
 
+    "submit_form_button": "Submit",
+    "@submit_form_button": {},
+
 
 
 
@@ -92,6 +110,9 @@
 
     "choose_primary_color": "Choose the main color for the app",
     "@choose_primary_color": {},
+
+    "set_hour_price_property_title": "Price per hour",
+    "@set_hour_price_property_title": {},
 
 
     "visit_our_website": "Visit out website!",
@@ -116,5 +137,10 @@
     "follow_us_twitter": "Follow us on twitter",
     "@follow_us_twitter": {},
     "follow_us_twitter_description": "So you don't miss on anything.",
-    "@follow_us_twitter_description": {}
+    "@follow_us_twitter_description": {},
+
+    "alert_input_accept": "Accept",
+    "@alert_input_accept": {},
+    "alert_input_cancel": "Cancel",
+    "@alert_input_cancel": {}
 }

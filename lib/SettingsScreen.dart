@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:hours_tracker/providers/configuration.dart';
+import 'package:hours_tracker/widgets/SetPropertyListTile.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
 // import 'package:shared_preferences/shared_preferences.dart';
@@ -21,6 +23,7 @@ class SettingsScreen extends StatelessWidget {
       ),
       body: ListView(
         children: <Widget>[
+          SetPropertyListTile(),
           ListTile(
             title: Text(AppLocalizations.of(context).choose_primary_color),
             onTap: () {
@@ -59,6 +62,7 @@ class SettingsScreen extends StatelessWidget {
                             child: RaisedButton(
                               color: color,
                               onPressed: () async {
+                                context.read<ConfigurationProvider>().appPrimaryColor = color.value;
                                 // SharedPreferences prefs =
                                 //     await SharedPreferences.getInstance();
                                 // await prefs.setInt(

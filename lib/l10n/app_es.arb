@@ -10,21 +10,30 @@
     "total": "Total",
     "@total": {},
 
-    "monday": "lunes",
+    "total_hours": "Hours",
+    "@total_hours": {},
+
+    "monday": "Lunes",
     "@monday": {},
-    "tuesday": "mrtes",
+    "tuesday": "Martes",
     "@tuesday": {},
-    "wednesday": "miércoles",
+    "wednesday": "Miércoles",
     "@wednesday": {},
-    "thursday": "jueves",
+    "thursday": "Jueves",
     "@thursday": {},
-    "friday": "viernes",
+    "friday": "Viernes",
     "@friday": {},
-    "saturday": "sábado",
+    "saturday": "Sábado",
     "@saturday": {},
-    "sunday": "domingo",
+    "sunday": "Domingo",
     "@sunday": {},
     
+    "month": "mes",
+    "@month": {},
+
+    "year": "año",
+    "@year": {},
+
     
 
 
@@ -43,41 +52,50 @@
     "table_price_per_hour_label": "$/hora",
     "@table_price_per_hour_label": {},
 
+    "table_edit_label": "Editar",
+    "@table_edit_label": {},
+
+    "table_delete_label": "Borrar",
+    "@table_delete_label": {},
+
 
 
 
     "new_item_title": "New item",
     "@new_item_title": {},
 
-    "new_item_date_label_title": "Date",
+    "new_item_date_label_title": "Fecha",
     "@new_item_date_label_title": {},
 
-    "new_item_place_label_title": "Place",
+    "new_item_place_label_title": "Lugar de trabajo",
     "@new_item_place_label_title": {},
 
-    "new_item_hours_label_title": "Hours",
+    "new_item_hours_label_title": "Horario",
     "@new_item_hours_label_title": {},
 
-    "hours_input_start_hour_label": "Start hour",
+    "hours_input_start_hour_label": "Inicio",
     "@hours_input_start_hour_label": {},
 
-    "hours_input_end_hour_label": "End hour",
+    "hours_input_end_hour_label": "Finalización",
     "@hours_input_end_hour_label": {},
 
-    "hours_input_is_not_number_label": "Write a number",
+    "hours_input_is_not_number_label": "Escribe un número",
     "@hours_input_is_not_number_label": {},
 
-    "hours_input_max_24_label": "Max is 24",
+    "hours_input_max_24_label": "Máximo es 24",
     "@hours_input_max_24_label": {},
 
-    "hours_input_min_0_label": "Min is 0",
+    "hours_input_min_0_label": "Mínimo es 0",
     "@hours_input_min_0_label": {},
 
-    "new_item_price_per_hour_label_title": "Price per hour",
+    "new_item_price_per_hour_label_title": "Precio por hora",
     "@new_item_price_per_hour_label_title": {},
 
-    "hour_price_is_not_number_label": "Field is not a number",
+    "hour_price_is_not_number_label": "El campo debe ser un número",
     "@hour_price_is_not_number_label": {},
+
+    "submit_form_button": "Crear",
+    "@submit_form_button": {},
 
 
 
@@ -92,6 +110,9 @@
 
     "choose_primary_color": "Elige el color principal de la aplicación",
     "@choose_primary_color": {},
+
+    "set_hour_price_property_title": "Price per hour",
+    "@set_hour_price_property_title": {},
 
 
     "visit_our_website": "Visita nuestro sitio web",
@@ -116,5 +137,10 @@
     "follow_us_twitter": "Síguenos en Twitter",
     "@follow_us_twitter": {},
     "follow_us_twitter_description": "Síguenos para no perderte de nada.",
-    "@follow_us_twitter_description": {}
+    "@follow_us_twitter_description": {},
+
+    "alert_input_accept": "Accept",
+    "@alert_input_accept": {},
+    "alert_input_cancel": "Cancel",
+    "@alert_input_cancel": {}
 }
