@@ -15,8 +15,12 @@ import 'package:provider/provider.dart';
 // }
 
 class NewItemScreen extends StatefulWidget {
+  final DayData item;
+
+  const NewItemScreen({Key key, this.item}) : super(key: key);
+
   @override
-  _NewItemScreenState createState() => _NewItemScreenState();
+  _NewItemScreenState createState() => _NewItemScreenState(item);
 }
 
 class _NewItemScreenState extends State<NewItemScreen> {
@@ -26,12 +30,31 @@ class _NewItemScreenState extends State<NewItemScreen> {
   TextEditingController _pricePerHourController = TextEditingController();
 
   GlobalKey<FormState> _formState = GlobalKey<FormState>();
-
+  DateTime oldItemDate;
   DateTime date = DateTime.now();
   List<List<double>> hoursList = [
     // [/* 2, 3 */]
     [0, 0]
   ];
+
+  _NewItemScreenState(DayData item) {
+    // print("${widget}");
+    // print("${item}");
+    if (item != null) {
+      oldItemDate = item.date;
+
+      _placeController = TextEditingController(text: item.place);
+      _pricePerHourController =
+          TextEditingController(text: item.pricePerHour?.toString());
+
+      // print("$hoursList");
+      date = item.date;
+      hoursList = item.hours.map((hoursItem) {
+        return [hoursItem.initHour, hoursItem.endHour].toList();
+      }).toList();
+      // print("$hoursList");
+    } else {}
+  }
 
   // to make sure the user doesn't create two items with the same date, we'll have three booleans, which will be used to checked the if the year, month and day match with an existing item.
   // we will only say to the user that they have to choose another date if the three variables are set to true at the time of submiting
@@ -188,6 +211,7 @@ class _NewItemScreenState extends State<NewItemScreen> {
                 ...hoursList.map<Row>(
                   (hoursPair) {
                     i++;
+                    print("hoursList $hoursList");
                     // print("hoursList ${hoursList.length}");
                     // print("i $i");
                     return Row(
@@ -196,6 +220,9 @@ class _NewItemScreenState extends State<NewItemScreen> {
                         Container(
                           width: 100,
                           child: TextFormField(
+                            initialValue: oldItemDate != null
+                                ? hoursList[i][0].toString()
+                                : null,
                             // controller: _hoursController,
                             keyboardType: TextInputType.number,
                             decoration: InputDecoration(
@@ -231,6 +258,9 @@ class _NewItemScreenState extends State<NewItemScreen> {
                         Container(
                           width: 100,
                           child: TextFormField(
+                            initialValue: oldItemDate != null
+                                ? hoursList[i][1].toString()
+                                : null,
                             // controller: _hoursController,
                             keyboardType: TextInputType.number,
                             decoration: InputDecoration(
@@ -300,7 +330,10 @@ class _NewItemScreenState extends State<NewItemScreen> {
                 TextFormField(
                   controller: _pricePerHourController,
                   keyboardType: TextInputType.number,
-                  decoration: InputDecoration(labelText: ""),
+                  decoration: InputDecoration(
+                      labelText:
+                          "${AppLocalizations.of(context).item_price_by_default_label}: \$" +
+                              "${context.read<ConfigurationProvider>().pricePerHour ?? ''}"),
                   validator: (value) {
                     // if (value.replaceAll(' ', '') == '')
                     //   return "This field must not be empty";
@@ -328,8 +361,11 @@ class _NewItemScreenState extends State<NewItemScreen> {
                       })
                           // backgroundColor: ,
                           ),
-                      child:
-                          Text(AppLocalizations.of(context).submit_form_button),
+                      child: Text(
+                        (oldItemDate == null
+                            ? AppLocalizations.of(context).submit_form_button
+                            : AppLocalizations.of(context).submit_edit_button),
+                      ),
                       onPressed: () {
                         // we checked the value a last time in case the user didn't change one value, and so it wouldn't have triggered the checked
                         if (context
@@ -351,6 +387,9 @@ class _NewItemScreenState extends State<NewItemScreen> {
                           yearTaken = true;
                         }
 
+                        // bool sameOldDate = date.year == oldItemDate.year;
+                        bool sameOldDate = date == oldItemDate;
+
                         print("\n\n\n");
                         print("daytaken $dayTaken");
                         print("monthTaken $monthTaken");
@@ -361,12 +400,14 @@ class _NewItemScreenState extends State<NewItemScreen> {
                         //     .read<HoursProvider>()
                         //     .hours
                         //     .contains(date)) {
-                        if (yearTaken && monthTaken && dayTaken) {
+                        if (yearTaken &&
+                            monthTaken &&
+                            dayTaken &&
+                            !sameOldDate) {
                           showDialog(
                             context: context,
                             builder: (context) => AlertDialog(
-                              content: Text(
-                                  "There is already an item with that date created."),
+                              content: Text(AppLocalizations.of(context).date_taken),
                               actions: [
                                 FlatButton(
                                   child: Text(AppLocalizations.of(context)
@@ -395,22 +436,35 @@ class _NewItemScreenState extends State<NewItemScreen> {
                             return HoursClass(hours[0], hours[1]);
                           }).toList();
 
-                          double pricePerHour =
-                              double.tryParse(_pricePerHourController.text) ??
+                          // TODO: see this ↓
+                          double price =
+                              double.tryParse(_pricePerHourController.text);
+                          // maybe the user wants to write the number even though is the same as default. In that case we will declare that variable as null, which will make it dependent of the value provided by the configuration provider
+                          double pricePerHour = price ==
                                   context
                                       .read<ConfigurationProvider>()
-                                      .pricePerHour;
+                                      .pricePerHour
+                              ? null
+                              : price;
+                          // ?? context.read<ConfigurationProvider>().pricePerHour;
 
-                          DayData item = DayData(
+                          DayData newItem = DayData(
                             hourDate,
                             place,
                             hours,
                             pricePerHour: pricePerHour,
                           );
 
-                          print("item $item");
-                          context.read<HoursProvider>().addNewItem(item);
-                          Navigator.pop(context);
+                          if (oldItemDate == null) {
+                            print("item $newItem");
+                            context.read<HoursProvider>().addNewItem(newItem);
+                            Navigator.pop(context);
+                          } else {
+                            context
+                                .read<HoursProvider>()
+                                .editItem(oldItemDate, newItem);
+                            Navigator.pop(context);
+                          }
                         }
                       },
                     ),

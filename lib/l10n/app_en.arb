@@ -10,6 +10,9 @@
     "total": "Total",
     "@total": {},
 
+    "all": "All",
+    "@all": {},
+
     "total_hours": "Hours",
     "@total_hours": {},
 
@@ -45,6 +48,9 @@
 
     "table_schedule_label": "Schedule",
     "@table_schedule_label": {},
+
+    "table_number_hours_label": "n° hours",
+    "@table_number_hours_label": {},
 
     "table_workplace_label": "Workplace",
     "@table_workplace_label": {},
@@ -91,12 +97,26 @@
 
     "new_item_price_per_hour_label_title": "Price per hour",
     "@new_item_price_per_hour_label_title": {},
+    
+    "new_item_price_per_hour_label_description": "If you want to leave it as the default value, leave it as it is",
+    "@new_item_price_per_hour_label_description": {},
+
 
     "hour_price_is_not_number_label": "Field is not a number",
     "@hour_price_is_not_number_label": {},
 
     "submit_form_button": "Submit",
     "@submit_form_button": {},
+
+    "item_price_by_default_label": "By default",
+    "@item_price_by_default_label": {},
+
+    "submit_edit_button": "Submit Changes",
+    "@submit_edit_button": {},
+
+
+    "date_taken": "There is already an item with that date created.",
+    "@date_taken": {},
 
 
 

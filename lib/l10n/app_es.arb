@@ -10,6 +10,9 @@
     "total": "Total",
     "@total": {},
 
+    "all": "Todos",
+    "@all": {},
+
     "total_hours": "Hours",
     "@total_hours": {},
 
@@ -45,6 +48,9 @@
 
     "table_schedule_label": "Horario",
     "@table_schedule_label": {},
+
+    "table_number_hours_label": "n° horas",
+    "@table_number_hours_label": {},
 
     "table_workplace_label": "Lugar",
     "@table_workplace_label": {},
@@ -91,12 +97,25 @@
     "new_item_price_per_hour_label_title": "Precio por hora",
     "@new_item_price_per_hour_label_title": {},
 
-    "hour_price_is_not_number_label": "El campo debe ser un número",
+    "new_item_price_per_hour_label_description": "Si quieres dejarlo como el valor predeterminado, déjalo como está.",
+    "@new_item_price_per_hour_label_description": {},
+    
+
+    "hour_price_is_not_number_label": "El campo debe ser un número.",
     "@hour_price_is_not_number_label": {},
 
     "submit_form_button": "Crear",
     "@submit_form_button": {},
 
+    "item_price_by_default_label": "Por defecto",
+    "@item_price_by_default_label": {},
+    
+    "submit_edit_button": "Guardar Cambios",
+    "@submit_edit_button": {},
+
+
+    "date_taken": "Ya existe un item con esa fecha creado.",
+    "@date_taken": {},
 
 
 

@@ -1,3 +1,6 @@
+// import 'dart:isolate';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:hours_tracker/data/dayData.dart';
@@ -7,7 +10,8 @@ class HoursProvider with ChangeNotifier {
   List hours;
 
   List /* <DayData> */ currentList;
-  int currentMonth = DateTime.now().month;
+  int _currentMonth = DateTime.now().month;
+
   int currentYear = DateTime.now().year;
 
   HoursProvider() {
@@ -17,7 +21,7 @@ class HoursProvider with ChangeNotifier {
 
   // **********************
   // list and items edition
-  
+
   editItem(DateTime date, DayData day) {
     int index = hours.indexWhere((item) =>
         item.date.year == date.year &&
@@ -50,6 +54,8 @@ class HoursProvider with ChangeNotifier {
   addNewItem(DayData day) {
     hours.add(day);
 
+    this.filterByMonth();
+
     notifyListeners();
 
     saveData();
@@ -62,36 +68,63 @@ class HoursProvider with ChangeNotifier {
       currentMonth = month;
     }
     // var s = Stopwatch()..start();
-
-    List<DayData> filteredList = [];
-    hours.forEach((item) => {
-          if (item.date.month == month && item.date.year == currentYear)
-            filteredList.add(item)
-        });
-    currentList = filteredList;
-    notifyListeners();
+    if (month > 0 && month <= 12) {
+      List<DayData> filteredList = [];
+      hours.forEach((item) => {
+            if (item.date.month == month && item.date.year == currentYear)
+              filteredList.add(item)
+          });
+      currentList = filteredList;
+      notifyListeners();
+    } else if (month == 0) {
+      this.filterByYear();
+    }
     // s.stop();
     // print("s ${s.elapsedMicroseconds}");
   }
 
-  filterByYear(int year) {
-    currentYear = year;
+  filterByYear([int year]) {
+    // var s = Stopwatch()..start();
+    if (year != null) {
+      currentYear = year;
+    } else {
+      year = currentYear;
+    }
+
+    // compute(
+    //   (params) {
+
+    //   }
+    // );
+
+    // Isolate.spawn((params) {}, 'Finished');
 
     List<DayData> filteredList = [];
     hours.forEach((item) => {
           if (item.date.year == year) {filteredList.add(item)}
         });
     currentList = filteredList;
+
     notifyListeners();
+
+    // s.stop();
+    // print("${s.elapsedMicroseconds}");
   }
 
   // **********************
   // getting class info
 
-  get currentListTotal {
+  getItem(DateTime date) {
+    return hours.firstWhere((item) =>
+        item.date.year == date.year &&
+        item.date.month == date.month &&
+        item.date.day == date.day);
+  }
+
+  currentListTotal(defaultPrice) {
     double total = 0;
     for (var item in currentList) {
-      total += item.totalHours * (item.pricePerHour ?? 0);
+      total += item.totalHours * (item.pricePerHour ?? defaultPrice ?? 0);
     }
     return total;
   }
@@ -158,6 +191,15 @@ class HoursProvider with ChangeNotifier {
   }
 
   // **********************
+  // getters and setters
+  int get currentMonth => _currentMonth;
+
+  set currentMonth(int currentMonth) {
+    _currentMonth = currentMonth;
+    notifyListeners();
+  }
+
+  // **********************
   // data saving/retrieving
 
   saveData() {}
@@ -184,32 +226,40 @@ List<DayData> testList = [
       [HoursClass(8, 22)],
     ),
   ),
-  ...List.generate(
-    100,
-    (index) {
-      if (index == 20)
-        return DayData(
-          // DateTime.parse('${index+1900}-${index+1}-${index+1}'),
-          DateTime.utc(2019, /* index +  */ 1, index + 1),
-          "Newbery",
-          // Set<HoursClass>.of(
-          List<HoursClass>.of(
-            [HoursClass(8, 22)],
-          ),
-          pricePerHour: 80,
-        );
-      return DayData(
-        // DateTime.parse('${index+1900}-${index+1}-${index+1}'),
-        DateTime.utc(2021, /* index +  */ 1, index + 1),
-        "Newbery",
-        // Set<HoursClass>.of(
-        List<HoursClass>.of(
-          [HoursClass(8, 22)],
-        ),
-        pricePerHour: 80,
-      );
-    },
-  )
+  DayData(
+    DateTime.parse('2021-01-02'),
+    "Newbery",
+    // Set<HoursClass>.of(
+    List<HoursClass>.of(
+      [HoursClass(8, 22)],
+    ),
+  ),
+  // ...List.generate(
+  //   365,
+  //   (index) {
+  //     if (index == 20)
+  //       return DayData(
+  //         // DateTime.parse('${index+1900}-${index+1}-${index+1}'),
+  //         DateTime.utc(2019, /* index +  */ 1, index + 1),
+  //         "Newbery",
+  //         // Set<HoursClass>.of(
+  //         List<HoursClass>.of(
+  //           [HoursClass(8, 22), HoursClass(8, 22)],
+  //         ),
+  //         pricePerHour: 179,
+  //       );
+  //     return DayData(
+  //       // DateTime.parse('${index+1900}-${index+1}-${index+1}'),
+  //       DateTime.utc(2021, /* index +  */ 1, index + 1),
+  //       "Newbery",
+  //       // Set<HoursClass>.of(
+  //       List<HoursClass>.of(
+  //         [HoursClass(8, 22)],
+  //       ),
+  //       pricePerHour: 80,
+  //     );
+  //   },
+  // )
 ];
 
 List<DayData> testList2 = [

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hours_tracker/providers/configuration.dart';
 import 'package:hours_tracker/providers/hours.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hours_tracker/screens/NewItemScreen.dart';
@@ -25,6 +26,10 @@ class HoursTableScreen extends StatelessWidget {
               ),
               DataColumn(
                 label: Text(AppLocalizations.of(context).table_schedule_label),
+              ),
+              DataColumn(
+                label:
+                    Text(AppLocalizations.of(context).table_number_hours_label),
               ),
               DataColumn(
                 label: Text(AppLocalizations.of(context).table_workplace_label),
@@ -59,14 +64,17 @@ class HoursTableScreen extends StatelessWidget {
                           // child: Text(
                           //     "${dayData.hours[0].initHour} - ${dayData.hours[0].endHour}"),
                         ),
-
                         // showEditIcon: true
                       ),
+                      DataCell(Text(dayData?.totalHours.toString() ?? "")),
                       DataCell(Text(dayData?.place ?? "")),
                       DataCell(
-                        Text(dayData.pricePerHour != null
-                            ? "\$ ${dayData.pricePerHour}"
-                            : ""),
+                        Text(
+                          "\$${dayData.pricePerHour ?? context.read<ConfigurationProvider>().pricePerHour}",
+                        ),
+                        // != null
+                        //     ? "\$ ${dayData.pricePerHour}"
+                        //     : ""),
                       ),
                       DataCell(IconButton(
                           icon: Icon(Icons.edit),
@@ -74,7 +82,8 @@ class HoursTableScreen extends StatelessWidget {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => NewItemScreen()));
+                                    builder: (context) =>
+                                        NewItemScreen(item: dayData)));
                             // context.read<HoursProvider>().editItem()
                           })),
                       DataCell(IconButton(
