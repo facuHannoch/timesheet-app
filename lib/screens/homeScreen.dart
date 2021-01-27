@@ -71,9 +71,9 @@ class HomeScreen extends StatelessWidget {
                         .read<HoursProvider>()
                         .allDaysInCurrentYearAndMonth(year, month);
                     days.sort();
-                    days.forEach((day) {
+                    days.forEach((day) async {
                       currentLine += 1;
-                      DayData item = context
+                      DayData item = await context
                           .read<HoursProvider>()
                           .getItem(DateTime.utc(year, month, day));
 
@@ -163,8 +163,7 @@ class HomeScreen extends StatelessWidget {
                   13,
                   (month) => month == 0
                       ? Text(AppLocalizations.of(context).all)
-                      : Text(
-                          "${AppLocalizations.of(context).month}: ${month}"),
+                      : Text("${AppLocalizations.of(context).month}: ${month}"),
                 ),
                 items: List.generate(
                   13,
@@ -172,10 +171,10 @@ class HomeScreen extends StatelessWidget {
                     child: month == 0
                         ? Text(AppLocalizations.of(context).all)
                         : Text("$month"),
-                    value: /* month == 0 ? 0 :  */month /* + 1 */, // TODO
+                    value: /* month == 0 ? 0 :  */ month /* + 1 */, // TODO
                   ),
                 ),
-                onChanged: (monthSelected) {
+                onChanged: (monthSelected) async {
                   int actualMonth = context.read<HoursProvider>().currentMonth;
                   if (monthSelected != actualMonth)
                     context.read<HoursProvider>().filterByMonth(monthSelected);
@@ -198,15 +197,27 @@ class HomeScreen extends StatelessWidget {
                     value: DateTime.now().year - year,
                   ),
                 ),
-                onChanged: (yearSelected) {
+                onChanged: (yearSelected) async {
                   int actualYear = context.read<HoursProvider>().currentYear;
-                  int currentMonth = context.read<HoursProvider>().currentMonth;
+                  // int currentMonth = context.read<HoursProvider>().currentMonth;
                   if (yearSelected != actualYear) {
-                    // var s = Stopwatch()..start();
-                    context.read<HoursProvider>().filterByMonth(currentMonth);
-                    // var function =
                     context.read<HoursProvider>().currentMonth = 0;
-                    context.read<HoursProvider>().filterByYear(yearSelected);
+                    // var s = Stopwatch()..start();
+                    // await context.read<HoursProvider>().filterByMonth(currentMonth);
+                    // print("before\n\n");
+                    // print("before\n\n");
+                    // print("currentList ${await context.read<HoursProvider>().currentList} \n\n");
+
+                    await context
+                        .read<HoursProvider>()
+                        .filterByYear(yearSelected)
+                        .then((value) {
+                      context.read<HoursProvider>().loadingData = false;
+                    });
+
+                    // print("after\n\n");
+                    // print("after\n\n");
+                    // print("currentList ${await context.read<HoursProvider>().currentList} \n\n");
 
                     // s.stop();
                     // print("${s.elapsedMicroseconds}");

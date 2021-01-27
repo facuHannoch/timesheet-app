@@ -419,8 +419,6 @@ class _NewItemScreenState extends State<NewItemScreen> {
                             ),
                           );
                         } else if (_formState.currentState.validate()) {
-                          print("list $hoursList");
-
                           // DateTime date = _dayController.text == null
                           //     ? DateTime.now()
                           //     : DateTime.tryParse(_dayController.text);
