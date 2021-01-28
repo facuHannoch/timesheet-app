@@ -28,6 +28,7 @@ class _NewItemScreenState extends State<NewItemScreen> {
   TextEditingController _placeController = TextEditingController();
   // TextEditingController _hoursController = TextEditingController();
   TextEditingController _pricePerHourController = TextEditingController();
+  TextEditingController _notesController = TextEditingController();
 
   GlobalKey<FormState> _formState = GlobalKey<FormState>();
   DateTime oldItemDate;
@@ -38,21 +39,18 @@ class _NewItemScreenState extends State<NewItemScreen> {
   ];
 
   _NewItemScreenState(DayData item) {
-    // print("${widget}");
-    // print("${item}");
     if (item != null) {
       oldItemDate = item.date;
 
       _placeController = TextEditingController(text: item.place);
       _pricePerHourController =
           TextEditingController(text: item.pricePerHour?.toString());
+      _notesController = TextEditingController(text: item.notes?.toString());
 
-      // print("$hoursList");
       date = item.date;
       hoursList = item.hours.map((hoursItem) {
         return [hoursItem.initHour, hoursItem.endHour].toList();
       }).toList();
-      // print("$hoursList");
     } else {}
   }
 
@@ -105,13 +103,17 @@ class _NewItemScreenState extends State<NewItemScreen> {
                           setState(() {
                             date =
                                 DateTime.utc(date.year, date.month, newValue);
-                            if (context
+                            context
                                 .read<HoursProvider>()
                                 .allDaysInCurrentYearAndMonth(
                                     date.year, date.month)
-                                .contains(newValue)) {
-                              dayTaken = true;
-                            }
+                                .then((value) {
+                              if (value.contains(newValue)) {
+                                dayTaken = true;
+                              } else {
+                                dayTaken = false;
+                              }
+                            });
                             // maxDay = 0;
                             // date = newValue;
                           });
@@ -130,13 +132,16 @@ class _NewItemScreenState extends State<NewItemScreen> {
                             setState(() {
                               date =
                                   DateTime.utc(date.year, newValue, date.day);
-                              if (context
+                              context
                                   .read<HoursProvider>()
                                   .allMonthsInCurrentYear(date.year)
-                                  .contains(newValue)) {
-                                monthTaken = true;
-                              }
-
+                                  .then((value) {
+                                if (value.contains(newValue)) {
+                                  monthTaken = true;
+                                } else {
+                                  monthTaken = false;
+                                }
+                              });
                               // date.month = newValue;
                             });
                           },
@@ -153,12 +158,16 @@ class _NewItemScreenState extends State<NewItemScreen> {
                             setState(() {
                               date =
                                   DateTime.utc(newValue, date.month, date.day);
-                              if (context
+                              context
                                   .read<HoursProvider>()
                                   .allYears
-                                  .contains(newValue)) {
-                                yearTaken = true;
-                              }
+                                  .then((value) {
+                                if (value.contains(newValue)) {
+                                  yearTaken = true;
+                                } else {
+                                  yearTaken = false;
+                                }
+                              });
 
                               // date.month = newValue;
                             });
@@ -195,7 +204,18 @@ class _NewItemScreenState extends State<NewItemScreen> {
                 TextFormField(
                   controller: _placeController,
                   decoration: InputDecoration(labelText: ""),
-                  maxLength: 80,
+                  maxLength: 30,
+                  maxLengthEnforced: true,
+                  validator: (value) {
+                    int nChars = value.toString().length;
+                    if (value != null) {
+                      if (nChars > 30 || nChars < 0) {
+                        return AppLocalizations.of(context).max_characters +
+                            30.toString();
+                      }
+                    }
+                    return null;
+                  },
                 ),
                 InputsDescription(
                   title:
@@ -211,9 +231,6 @@ class _NewItemScreenState extends State<NewItemScreen> {
                 ...hoursList.map<Row>(
                   (hoursPair) {
                     i++;
-                    print("hoursList $hoursList");
-                    // print("hoursList ${hoursList.length}");
-                    // print("i $i");
                     return Row(
                       // key: Key(i.toString()),
                       children: <Widget>[
@@ -225,6 +242,7 @@ class _NewItemScreenState extends State<NewItemScreen> {
                                 : null,
                             // controller: _hoursController,
                             keyboardType: TextInputType.number,
+                            textInputAction: TextInputAction.next,
                             decoration: InputDecoration(
                                 labelText: AppLocalizations.of(context)
                                     .hours_input_start_hour_label),
@@ -246,7 +264,7 @@ class _NewItemScreenState extends State<NewItemScreen> {
                                 if (!hoursList[i][0].isNaN)
                                   hoursList[i]?.removeAt(0);
                                 hoursList[i]
-                                    .insert(0, double.parse(newValue) ?? 0);
+                                    .insert(0, double.tryParse(newValue) ?? 0);
                               });
                             },
                           ),
@@ -260,7 +278,7 @@ class _NewItemScreenState extends State<NewItemScreen> {
                           child: TextFormField(
                             initialValue: oldItemDate != null
                                 ? hoursList[i][1].toString()
-                                : null,
+                                : "",
                             // controller: _hoursController,
                             keyboardType: TextInputType.number,
                             decoration: InputDecoration(
@@ -337,12 +355,37 @@ class _NewItemScreenState extends State<NewItemScreen> {
                   validator: (value) {
                     // if (value.replaceAll(' ', '') == '')
                     //   return "This field must not be empty";
-                    print(value.runtimeType);
-                    print("coso $value");
                     if (/* value != null ||  */ value != '') {
                       if (double.tryParse(value) == null)
                         return AppLocalizations.of(context)
                             .hour_price_is_not_number_label;
+                    }
+                    return null;
+                  },
+                ),
+                InputsDescription(
+                  title:
+                      AppLocalizations.of(context).new_item_notes_label_title,
+                  description: AppLocalizations.of(context)
+                      .new_item_notes_label_description,
+                ),
+                TextFormField(
+                  controller: _notesController,
+                  // minLines: 3,
+                  maxLines: 5,
+                  maxLength: 300,
+                  maxLengthEnforced: true,
+                  textInputAction: TextInputAction.newline,
+                  decoration: InputDecoration(
+                      labelText: AppLocalizations.of(context)
+                          .new_item_notes_label_placeholder),
+                  validator: (value) {
+                    int nChars = value.toString().length;
+                    if (value != null) {
+                      if (nChars > 300 || nChars < 0) {
+                        return AppLocalizations.of(context).max_characters +
+                            300.toString();
+                      }
                     }
                     return null;
                   },
@@ -366,40 +409,64 @@ class _NewItemScreenState extends State<NewItemScreen> {
                             ? AppLocalizations.of(context).submit_form_button
                             : AppLocalizations.of(context).submit_edit_button),
                       ),
-                      onPressed: () {
+                      onPressed: () async {
                         // we checked the value a last time in case the user didn't change one value, and so it wouldn't have triggered the checked
-                        if (context
-                            .read<HoursProvider>()
-                            .allDaysInCurrentYearAndMonth(date.year, date.month)
+                        if ((await context
+                                .read<HoursProvider>()
+                                .allDaysInCurrentYearAndMonth(
+                                    date.year, date.month))
                             .contains(date.day)) {
                           dayTaken = true;
+                        } else {
+                          dayTaken = false;
                         }
-                        if (context
-                            .read<HoursProvider>()
-                            .allMonthsInCurrentYear(date.year)
+                        if ((await context
+                                .read<HoursProvider>()
+                                .allMonthsInCurrentYear(date.year))
                             .contains(date.month)) {
                           monthTaken = true;
+                        } else {
+                          monthTaken = false;
                         }
-                        if (context
-                            .read<HoursProvider>()
-                            .allYears
+                        if ((await context.read<HoursProvider>().allYears)
                             .contains(date.year)) {
                           yearTaken = true;
+                        } else {
+                          yearTaken = false;
                         }
+
+                        // await context
+                        //     .read<HoursProvider>()
+                        //     .allDaysInCurrentYearAndMonth(date.year, date.month)
+                        //     .then((value) {
+                        //   if (value.contains(date.day)) {
+                        //     dayTaken = true;
+                        //   }
+                        // });
+                        // await context
+                        //     .read<HoursProvider>()
+                        //     .allMonthsInCurrentYear(date.year)
+                        //     .then((value) {
+                        //   if (value.contains(date.month)) {
+                        //     monthTaken = true;
+                        //   }
+                        // });
+                        // await context.read<HoursProvider>().allYears.then((value) {
+                        //   if (value.contains(date.year)) {
+                        //     yearTaken = true;
+                        //   }
+                        // });
 
                         // bool sameOldDate = date.year == oldItemDate.year;
                         bool sameOldDate = date == oldItemDate;
 
-                        print("\n\n\n");
-                        print("daytaken $dayTaken");
-                        print("monthTaken $monthTaken");
-                        print("yearTaken $yearTaken");
-                        print("date $date");
-                        print("\n\n\n");
-                        // if (context
-                        //     .read<HoursProvider>()
-                        //     .hours
-                        //     .contains(date)) {
+                        // print("\n\n\n");
+                        // print("daytaken $dayTaken");
+                        // print("monthTaken $monthTaken");
+                        // print("yearTaken $yearTaken");
+                        // print("date $date");
+                        // print("\n\n\n");
+
                         if (yearTaken &&
                             monthTaken &&
                             dayTaken &&
@@ -407,7 +474,8 @@ class _NewItemScreenState extends State<NewItemScreen> {
                           showDialog(
                             context: context,
                             builder: (context) => AlertDialog(
-                              content: Text(AppLocalizations.of(context).date_taken),
+                              content:
+                                  Text(AppLocalizations.of(context).date_taken),
                               actions: [
                                 FlatButton(
                                   child: Text(AppLocalizations.of(context)
@@ -446,15 +514,17 @@ class _NewItemScreenState extends State<NewItemScreen> {
                               : price;
                           // ?? context.read<ConfigurationProvider>().pricePerHour;
 
+                          String notes = _notesController.text;
+
                           DayData newItem = DayData(
                             hourDate,
-                            place,
                             hours,
+                            place: place,
                             pricePerHour: pricePerHour,
+                            notes: notes,
                           );
 
                           if (oldItemDate == null) {
-                            print("item $newItem");
                             context.read<HoursProvider>().addNewItem(newItem);
                             Navigator.pop(context);
                           } else {

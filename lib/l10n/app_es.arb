@@ -37,6 +37,22 @@
     "year": "año",
     "@year": {},
 
+    "no_data": "No hay registros. Toca el '+' para añadir un registro",
+    "@no_data": {},
+
+    "current_filter_no_data": "Sin datos",
+    "@current_filter_no_data": {},
+
+
+    "export_excel_tooltip": "Exportar archivo Excel",
+    "@export_excel_tooltip": {},
+
+    "new_item_tooltip": "Añadir nuevo registro",
+    "@new_item_tooltip": {},
+
+    "settings_tooltip": "Configuración",
+    "@settings_tooltip": {},
+    
     
 
 
@@ -99,7 +115,21 @@
 
     "new_item_price_per_hour_label_description": "Si quieres dejarlo como el valor predeterminado, déjalo como está.",
     "@new_item_price_per_hour_label_description": {},
+
+
+    "new_item_notes_label_title": "Notas",
+    "@new_item_notes_label_title": {},
     
+    "new_item_notes_label_description": "Información adicional que quieras añadir",
+    "@new_item_notes_label_description": {},
+
+    "new_item_notes_label_placeholder": "notas",
+    "@new_item_notes_label_placeholder": {},
+
+
+
+    "max_characters": "Máx carácteres: ",
+    "@max_characters": {},
 
     "hour_price_is_not_number_label": "El campo debe ser un número.",
     "@hour_price_is_not_number_label": {},
@@ -112,6 +142,7 @@
     
     "submit_edit_button": "Guardar Cambios",
     "@submit_edit_button": {},
+
 
 
     "date_taken": "Ya existe un item con esa fecha creado.",

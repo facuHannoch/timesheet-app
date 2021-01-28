@@ -6,16 +6,78 @@ class DayData {
   // int day;
   // int month;
   DateTime date;
-  String place;
   List<HoursClass> hours;
   double pricePerHour;
+  String place;
+  String notes;
 
   DayData(
     this.date,
-    this.place,
     this.hours, {
+    this.place,
     this.pricePerHour,
+    this.notes,
   });
+
+  factory DayData.fromMap(Map data) {
+    // if (data["date"] == null) {
+    //   return null;
+    // }
+    print(data["date"]);
+    List<int> dates =
+        data["date"].split('-').map<int>((value) => int.parse(value)).toList();
+    // the first is the year, the second the month and the third the day
+    // int = dates[1].toString().padLeft(2)
+    DateTime date = DateTime.utc(dates[0], dates[1], dates[2]);
+
+    List<HoursClass> schedule = hoursFromString(data["schedule"]);
+
+    return DayData(
+      date,
+      schedule,
+      place: data["workplace"],
+      pricePerHour: data["pricePerHour"],
+      notes: data["notes"],
+    );
+  }
+  void editItemExceptDate(DayData newVersion) {
+    this.hours = newVersion.hours;
+    this.place = newVersion.place;
+    this.pricePerHour = newVersion.pricePerHour;
+    this.notes = newVersion.notes;
+  }
+  
+
+  static List hoursFromString(String hoursString) {
+    List list;
+    if (hoursString.contains('-')) {
+      list = hoursString.split('-');
+    } else {
+      // list = [Hours]
+      list = [hoursString.substring(0, hoursString.length)];
+    }
+    list = list.map<HoursClass>((hoursClass) {
+      List hour = hoursClass
+          .split(',')
+          .map((element) => double.parse(element))
+          .toList();
+      return HoursClass(hour[0], hour[1]);
+    }).toList();
+    // hours = list;
+
+    return list;
+  }
+
+  get hoursAsString {
+    List list = hours.map((hoursClass) {
+      return hoursClass.asString;
+    }).toList();
+    return list.join('-');
+  }
+
+  get formattedDate =>
+      "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
+
   // List hours;
 
   //{
@@ -26,6 +88,7 @@ class DayData {
   String toString() {
     return "$date - $place - $hours - $pricePerHour";
   }
+
   get totalHours {
     double totalHours = 0;
     hours.forEach((hourPair) {
@@ -33,6 +96,10 @@ class DayData {
     });
     return totalHours;
   }
+
+  // get hoursAsString {
+  //   hours.toString();
+  // }
 
   get day => date.day;
 
@@ -77,6 +144,7 @@ class HoursClass {
   HoursClass(this.initHour, this.endHour);
 
   get time => endHour - initHour;
+  get asString => "$initHour,$endHour";
 
   String toString() {
     return "$initHour - $endHour";

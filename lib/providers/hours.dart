@@ -13,10 +13,10 @@ import 'package:sqflite/sqflite.dart';
 const DEFAULT_ASCENDING = false;
 
 class HoursProvider with ChangeNotifier {
-  static Future /* <List> */ hours;
+  Future<List> /* <List> */ hours = Future.value([]);
   Database db;
 
-  Future /* <DayData> */ currentList;
+  List /* <DayData> */ currentList = [];
   int _currentMonth = DateTime.now().month;
   int currentYear = DateTime.now().year;
 
@@ -25,11 +25,17 @@ class HoursProvider with ChangeNotifier {
 
   HoursProvider() {
     hours = getData();
-    currentList = hours;
-    // print("hours> $currentList");
-    this.filterByMonth();
+    hours.then((value) {
+      currentList = value;
+      this.filterByMonth();
 
-    loadingData = false;
+      loadingData = false;
+    }).catchError((error) {
+      print("error");
+      print(error);
+      loadingData = false;
+      hours = Future.value([]);
+    });
     // getData().then((data) {
     //   hours = data;
     //   notifyListeners();
@@ -39,19 +45,20 @@ class HoursProvider with ChangeNotifier {
   // **********************
   // list and items edition
 
-  editItem(DateTime date, DayData day) async {
+  editItem(DateTime oldDate, DayData day) async {
     int index = (await hours).indexWhere((item) =>
-        item.date.year == date.year &&
-        item.date.month == date.month &&
-        item.date.day == date.day);
+        item.date.year == oldDate.year &&
+        item.date.month == oldDate.month &&
+        item.date.day == oldDate.day);
     hours.then((hours) {
-      hours[index] = day;
+      // hours[index] = day;
+      hours[index].editItemExceptDate(day);
       notifyListeners();
     });
 
     this.filterByMonth();
 
-    saveData();
+    saveEditedItem(oldDate, day);
   }
 
   void deleteItem(DateTime date) async {
@@ -64,20 +71,34 @@ class HoursProvider with ChangeNotifier {
     this.filterByMonth();
 
     notifyListeners();
-    saveData();
+    // saveData();
+    deleteData(date);
   }
 
   // **********************
   // data management
 
   addNewItem(DayData day) async {
-    (await hours).add(day);
-
-    this.filterByMonth();
-
+    hours.then(
+      (List list) => (list /*  as List<DayData> */).add(day),
+    );
+    // await hours.then((List hours) {
+    //   print("hours $hours");
+    //   print("day $day");
+    //   List<DayData> list = []..add(DayData(day.date, day.place, day.hours));
+    //   print("list $list");
+    //   hours = list;
+    //   hours = [day];
+    //   print("hours d $hours");
+    //   notifyListeners();
+    // });
     notifyListeners();
 
-    saveData();
+    // print("hours dd ${await hours}");
+    this.filterByMonth();
+
+    // saveData();
+    saveItemData(day);
   }
 
   sortCurrentListByDay(bool ascending) async {
@@ -85,12 +106,12 @@ class HoursProvider with ChangeNotifier {
     // currentList.then((currentList) {
     // if (currentMonth == 0) {
     if (ascending) {
-      (await currentList).sort(
-        (DayData a, DayData b) => a.date.compareTo(b.date),
-      );
+      (currentList).sort((a, b) => a.date.compareTo(b.date));
+      // (currentList).sort((DayData a, DayData b) => a.date.compareTo(b.date));
     } else {
-      (await currentList).sort(
-        (DayData b, DayData a) => a.date.compareTo(b.date),
+      (currentList).sort(
+        (b, a) => a.date.compareTo(b.date),
+        // (DayData b, DayData a) => a.date.compareTo(b.date),
       );
     }
     // ..sort(
@@ -124,7 +145,7 @@ class HoursProvider with ChangeNotifier {
     }
     if (month > 0 && month <= 12) {
       loadingData = true;
-      currentList = Future.value();
+      currentList = [];
 
       notifyListeners();
 
@@ -136,11 +157,11 @@ class HoursProvider with ChangeNotifier {
       //       if (item.date.month == month && item.date.year == currentYear)
       //         filteredList.add(item)
       //     });
-      currentList = filteredList;
-      currentList.then((currentList) {
-        loadingData = false;
-        notifyListeners();
-      });
+      currentList = await filteredList;
+      // currentList.then((currentList) {
+      loadingData = false;
+      notifyListeners();
+      // });
     } else if (month == 0) {
       this.filterByYear().then((value) {
         loadingData = false;
@@ -164,10 +185,10 @@ class HoursProvider with ChangeNotifier {
 
     List list = await hours;
     Map message = {"year": year, "list": list};
-    print("PEPE");
 
     loadingData = true;
-    currentList = Future.value();
+    // currentList = Future.value();
+    currentList = [];
 
     notifyListeners();
 
@@ -175,7 +196,7 @@ class HoursProvider with ChangeNotifier {
     // print("the filteredList ${await filteredList}");
 
     await filteredList.then((value) async {
-      currentList = filteredList;
+      currentList = await filteredList;
 
       _sortAscending = DEFAULT_ASCENDING;
       notifyListeners();
@@ -204,9 +225,7 @@ class HoursProvider with ChangeNotifier {
   }
 
   static FutureOr<List> computeCallback(Map message) async {
-    // print("v $message");
     List<DayData> filteredList = [];
-    // print("m ${message["month"]}");
     if (message["month"] != null) {
       message["list"].forEach((item) => {
             if (item.date.month == message["month"] &&
@@ -228,7 +247,8 @@ class HoursProvider with ChangeNotifier {
   // getting class info
 
   Future<DayData> getItem(DateTime date) async {
-    return (await hours).firstWhere((item) =>
+    // return DayData(DateTime.now(), [HoursClass(4, 5)]);
+    return (await hours)?.firstWhere((item) =>
         item.date.year == date.year &&
         item.date.month == date.month &&
         item.date.day == date.day);
@@ -237,22 +257,21 @@ class HoursProvider with ChangeNotifier {
 
   currentListTotal(defaultPrice) {
     double total = 0;
-    print("$currentList");
-    currentList /* ? */ .then((currentList) {
-      for (var item in currentList) {
-        total += item.totalHours * (item.pricePerHour ?? defaultPrice ?? 0);
-      }
-    });
+    // currentList?.then((currentList) {
+    for (var item in currentList) {
+      total += item.totalHours * (item.pricePerHour ?? defaultPrice ?? 0);
+    }
+    // });
     return total;
   }
 
   get currentListTotalHours {
     double totalHours = 0;
-    currentList?.then((currentList) {
-      for (var item in currentList) {
-        totalHours += item.totalHours;
-      }
-    });
+    // currentList?.then((currentList) {
+    for (var item in currentList) {
+      totalHours += item.totalHours;
+    }
+    // });
     return totalHours;
   }
 
@@ -272,45 +291,41 @@ class HoursProvider with ChangeNotifier {
   //   return totalHours;
   // }
 
-  List get allYears {
+  Future<List> get allYears async {
     List<int> years = [];
-    hours.then((hours) {
-      hours.forEach((item) {
-        if (!years.contains(item.date.year)) {
-          years.add(item.date.year);
-        }
-      });
+    (await hours).forEach((item) {
+      if (!years.contains(item.date.year)) {
+        years.add(item.date.year);
+      }
     });
     return years;
   }
 
-  List allMonthsInCurrentYear([year]) {
+  Future<List> allMonthsInCurrentYear([int year]) async {
     // CalendarDatePicker();
     List<int> months = [];
-    hours.then((hours) {
-      hours.forEach((item) {
-        if (item.date.year == (year ?? currentYear)) {
-          if (!months.contains(item.date.month)) {
-            months.add(item.date.month);
-          }
+    // hours.then((hours) {
+    (await hours).forEach((item) {
+      if (item.date.year == (year ?? currentYear)) {
+        if (!months.contains(item.date.month)) {
+          months.add(item.date.month);
         }
-      });
+      }
     });
+    // });
     return months;
   }
 
-  List allDaysInCurrentYearAndMonth([year, month]) {
+  Future<List> allDaysInCurrentYearAndMonth([int year, int month]) async {
     List<int> days = [];
-    hours.then((hours) {
-      hours.forEach((item) {
-        if (item.date.year == (year ?? currentYear)) {
-          if (item.date.month == (month ?? currentMonth)) {
-            if (!days.contains(item.date.day)) {
-              days.add(item.date.day);
-            }
+    (await hours).forEach((item) {
+      if (item.date.year == (year ?? currentYear)) {
+        if (item.date.month == (month ?? currentMonth)) {
+          if (!days.contains(item.date.day)) {
+            days.add(item.date.day);
           }
         }
-      });
+      }
     });
     return days;
   }
@@ -344,28 +359,78 @@ class HoursProvider with ChangeNotifier {
   // data saving/retrieving
 
   saveItemData(DayData item) async {
+    // DateTime date = item.formattedDate;
     db.insert('hours', {
-      "date": item.date,
-      "schedule": item.hours,
+      // "date": "date(${item.date.year} - ${item.date.month} - ${item.date.day})",
+      // "date": "date(\"${item.formattedDate}\")",
+      "date": "${item.formattedDate}",
+      "schedule": item.hoursAsString,
       "workplace": item.place,
       "pricePerHour": item.pricePerHour,
-      // "notes": item.notes
+      "notes": item.notes
     });
   }
 
   saveEditedItem(DateTime oldDataItem, DayData item) {
-    db.update('hours', {
-      "date": item.date,
-      "schedule": item.hours,
-      "workplace": item.place,
-      "pricePerHour": item.pricePerHour,
-      // "notes": item.notes
-    });
+    // String stringDate =
+    //     "${item.date.year}-${item.date.month.toString().padLeft(2, '0')}-${item.date.day.toString().padLeft(2, '0')}";
+    db.update(
+        'hours',
+        {
+          // "date": "date('${item.formattedDate}')",
+          "schedule": item.hoursAsString,
+          "workplace": item.place,
+          "pricePerHour": item.pricePerHour,
+          "notes": item.notes
+        },
+        where: "date = \"${item.formattedDate}\""
+        // "date = \"date(${item.date.year} - ${item.date.month} - ${item.date.day})\"",
+        );
+    // update hours
+// set date = date("2021-01-28"), schedule = "PEPE, 2", workplace = "String", priceperhour = 50, notes = "house"
+// where date = date("2021-01-28");
   }
 
   deleteData(DateTime date) async {
     // String path = await getDatabasesPath();
-    db.delete('hours', where: 'date = ?', whereArgs: [date]);
+    String formattedDate =
+        "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
+
+    // db.execute("BEGIN TRANSACTION");
+    // db.execute("DELETE FROM hours WHERE date = DATE(\"2021-01-03\")");
+    // db.execute("COMMIT");
+
+    // db.execute("DELETE FROM hours WHERE date = DATE(\"$formattedDate\")");
+
+    db.execute("BEGIN TRANSACTION");
+    db
+        .delete(
+      'hours',
+      where: 'date = DATE(\"$formattedDate\")',
+      // whereArgs: ["DATE(\"2021-01-01\")"]
+    )
+        .then((rowsAffected) {
+      if (rowsAffected != 1) {
+        db.execute("ROLLBACK");
+      } else {
+        db.execute("COMMIT");
+      }
+    });
+
+    // db.transaction((txn) {
+    //   return txn.delete('hours',
+    //       where: 'date = ?',
+    //       whereArgs: ["date('$formattedDate')"]).then((rowsAffected) {
+    //     if (rowsAffected != 1) {
+    //       txn.execute("ROLLBACK");
+    //     } else {
+    //       txn.execute("COMMIT");
+    //     }
+    //   });
+    // });
+    // db.delete('hours', where: 'date = ?', whereArgs: ["date('$formattedData')"]).then((value) {
+
+    // });
   }
 
   saveData() async {
@@ -373,64 +438,103 @@ class HoursProvider with ChangeNotifier {
   }
 
   Future<List> getData() async {
-    // await instantiateDatabase();
-    // List list;
-    // try {
-    //   list = await db.rawQuery("SELECT * FROM hours");
-    // } catch (e) {
-    //   print(e);
-    // }
-    // return list;
+    await instantiateDatabase();
+    List<Map> list;
+    try {
+      list = (await db.rawQuery("SELECT * FROM hours"));
+    } catch (e) {
+      print(e);
+    }
+
+    // print(list);
+
+    // List<DayData> dataList =
+    //     list.map((registry) => DayData.fromMap(registry)).toList();
+
+    List<DayData> dataList = [];
+    list.forEach((registry) {
+      if (registry["date"] != null) {
+        dataList.add(DayData.fromMap(registry));
+      }
+    });
+
+    return dataList;
 
     return Future.value(testList);
   }
 
   instantiateDatabase() async {
     String path = await getDatabasesPath();
-    String createdbQuery = "CREATE TABLE hours(" +
-        "id INTEGER AUTO_INCREMENT PRIMARY KEY, " +
-        "date DATE NOT NULL, " +
-        "schedule TEXT NOT NULL, " +
-        "workplace TEXT, " +
-        "pricePerHour REAL, " +
-        "notes TEXT" +
-        ")";
+    // String createdbQuery = "CREATE TABLE hours(" +
+    //     "id INTEGER AUTO_INCREMENT PRIMARY KEY, " +
+    //     "date DATE NOT NULL, " +
+    //     "schedule TEXT NOT NULL, " +
+    //     "workplace TEXT, " +
+    //     "pricePerHour REAL, " +
+    //     "notes TEXT" +
+    //     ")";
+    String createdbQuery = """
+    CREATE TABLE hours(
+      date DATE PRIMARY KEY, 
+      schedule TEXT NOT NULL,
+      workplace TEXT, 
+      pricePerHour REAL, 
+      notes TEXT
+    ); """;
     db = await openDatabase(
       '$path/my_db.db',
       version: 1,
       onCreate: (db, version) => db.execute(createdbQuery),
     );
     notifyListeners();
+/*
+    db.execute("DROP TABLE hours");
+    db.execute(createdbQuery);
 
-    // db.execute("DROP TABLE hours");
-    // db.execute(createdbQuery);
-
-    // db.execute("SELECT * FROM hours");
+    for (var a = 0; a < 100; a++) {
+      for (var j = 0; j < 12; j++) {
+        for (var i = 0; i < (j == 2 ? 28 : 30); i++) {
+          String insertData = """
+    INSERT into hours (date, schedule, workplace, notes)
+    VALUES(
+      date("2${a.toString().padLeft(3, '0')}-${(j + 1).toString().padLeft(2, '0')}-${(i + 1).toString().padLeft(2, '0')}"),
+      "2,5",
+      "Workplace",
+      
+      "You can even write notes for each day. This notes can be quite large (Up to 300 characters! That is a lot of characters. I wonder if anyone could use so many characters)"
+    );""";
+          db.execute(insertData);
+        }
+      }
+    }
+*/
     List list = await db.rawQuery("SELECT * FROM hours");
-    print("db_list $list");
   }
 }
 
 List<DayData> testList = [
   DayData(
     DateTime.parse('2020-03-20'),
-    "Newbery",
     // Set<HoursClass>.of(
     List<HoursClass>.of(
       [HoursClass(8, 22)],
     ),
+    place: "Newbery",
   ),
   DayData(
-    DateTime.parse('2019-03-20'),
-    "Newbery",
-    // Set<HoursClass>.of(
-    List<HoursClass>.of(
-      [HoursClass(8, 22)],
-    ),
-  ),
+      DateTime.parse('2019-03-20'),
+      // Set<HoursClass>.of(
+      List<HoursClass>.of(
+        [HoursClass(8, 22)],
+      ),
+      notes: """maxLines: 5,
+                  maxLength: 250,
+                  maxLengthEnforced: true,
+                  textInputAction: TextInputAction.newline,
+                  decoration: InputDecoration(
+                      labelText: AppLocalizatio"""),
   DayData(
     DateTime.parse('2021-01-04'),
-    "Newbery",
     // Set<HoursClass>.of(
     List<HoursClass>.of(
       [
@@ -439,18 +543,16 @@ List<DayData> testList = [
     ),
   ),
   DayData(
-    DateTime.parse('2021-01-03'),
-    "Newbery",
-    // Set<HoursClass>.of(
-    List<HoursClass>.of(
-      [
-        HoursClass(8, 22),
-      ],
-    ),
-  ),
+      DateTime.parse('2021-01-03'),
+      // Set<HoursClass>.of(
+      List<HoursClass>.of(
+        [
+          HoursClass(8, 22),
+        ],
+      ),
+      notes: "A very good note to put in every thing that you want"),
   DayData(
     DateTime.parse('2021-01-05'),
-    "Newbery",
     // Set<HoursClass>.of(
     List<HoursClass>.of(
       [
@@ -460,7 +562,6 @@ List<DayData> testList = [
   ),
   DayData(
     DateTime.parse('2021-01-02'),
-    "Newbery",
     // Set<HoursClass>.of(
     List<HoursClass>.of(
       [
@@ -479,13 +580,12 @@ List<DayData> testList = [
     ),
   ),
   ...List.generate(
-    50,
+    5000,
     (index) {
       if (index == 20)
         return DayData(
           // DateTime.parse('${index+1900}-${index+1}-${index+1}'),
           DateTime.utc(2019, /* index +  */ 1, index + 5),
-          "Newbery",
           // Set<HoursClass>.of(
           List<HoursClass>.of(
             [HoursClass(8, 22), HoursClass(8, 22)],
@@ -493,19 +593,20 @@ List<DayData> testList = [
           pricePerHour: 179,
         );
       return DayData(
-        // DateTime.parse('${index+1900}-${index+1}-${index+1}'),
-        DateTime.utc(2021, /* index +  */ 1, index + 1),
-        "Newbery",
-        // Set<HoursClass>.of(
-        List<HoursClass>.of(
-          [HoursClass(8, 22)],
-        ),
-        pricePerHour: 80,
-      );
+          // DateTime.parse('${index+1900}-${index+1}-${index+1}'),
+          DateTime.utc(2021, /* index +  */ 1, index + 1),
+          // Set<HoursClass>.of(
+          List<HoursClass>.of(
+            [HoursClass(8, 22)],
+          ),
+          pricePerHour: 80,
+          place: "Newbery",
+          notes:
+              "A very good note to put in every thing that you want. You cant put everything here!");
     },
   )
 ];
-
+/*
 List<DayData> testList2 = [
   DayData(
     DateTime.parse('2021-01-20'),
@@ -539,3 +640,4 @@ List<DayData> testList2 = [
     ),
   ),
 ];
+*/
