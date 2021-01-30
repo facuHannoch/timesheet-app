@@ -23,7 +23,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  admob_flutter: ^1.0.1
 
   syncfusion_flutter_xlsio: ^18.4.35-beta
   sqflite: ^1.3.2+2

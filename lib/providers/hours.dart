@@ -6,14 +6,9 @@ import 'package:flutter/material.dart';
 
 import 'package:hours_tracker/data/dayData.dart';
 
-import 'package:admob_flutter/admob_flutter.dart';
-
 import 'package:sqflite/sqflite.dart';
 
 const DEFAULT_ASCENDING = false;
-
-const ACTIONS_WITHOUT_ADS = 7;
-const EXPORTS_WITHOUT_ADS = 3;
 
 class HoursProvider with ChangeNotifier {
   Future<List> /* <List> */ hours = Future.value([]);
@@ -27,11 +22,6 @@ class HoursProvider with ChangeNotifier {
 
   bool _loadingData = true;
   bool _sortAscending = DEFAULT_ASCENDING;
-
-  AdmobInterstitial actionsInterstitial;
-  AdmobInterstitial exportInterstitial;
-  int actions = 0;
-  int exports = 0;
 
   HoursProvider() {
     hours = getData();
@@ -59,23 +49,6 @@ class HoursProvider with ChangeNotifier {
       }
       listYears.sort();
     });
-    actionsInterstitial = AdmobInterstitial(
-        adUnitId: AdmobInterstitial.testAdUnitId,
-        listener: (AdmobAdEvent event, Map args) {
-          if (event == AdmobAdEvent.closed) {
-            actionsInterstitial.load();
-          }
-        });
-    exportInterstitial = AdmobInterstitial(
-        adUnitId: AdmobInterstitial.testAdUnitId,
-        listener: (AdmobAdEvent event, Map args) {
-          if (event == AdmobAdEvent.closed) {
-            exportInterstitial.load();
-          }
-        });
-    actionsInterstitial.load();
-    exportInterstitial.load();
-
     // getData().then((data) {
     //   hours = data;
     //   notifyListeners();
@@ -84,32 +57,6 @@ class HoursProvider with ChangeNotifier {
 
   // **********************
   // ads related stuff
-
-  showInterstitial({export = false}) async {
-    if (export) {
-      if (await exportInterstitial.isLoaded &&
-          (exports == 0 || exports % EXPORTS_WITHOUT_ADS == 0)) {
-        exportInterstitial.show();
-        exports = 0;
-      } else {
-        exports++;
-      }
-    } else {
-      // it is very likely that the user just adds one record and then closes doen't create any more until he re-open the app.
-      if (await actionsInterstitial.isLoaded &&
-          (actions == 0 || actions > ACTIONS_WITHOUT_ADS)) {
-        actionsInterstitial.show();
-        actions = 1;
-      } else {
-        actions++;
-      }
-    }
-  }
-
-  disposeInterstitials() {
-    actionsInterstitial.dispose();
-    exportInterstitial.dispose();
-  }
 
   // **********************
   // list and items edition

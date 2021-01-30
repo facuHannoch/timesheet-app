@@ -512,7 +512,6 @@ class _NewItemScreenState extends State<NewItemScreen> {
                                 .editItem(oldItemDate, newItem);
                             Navigator.pop(context);
                           }
-                          context.read<HoursProvider>().showInterstitial();
                         }
                       },
                     ),

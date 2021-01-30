@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'dart:isolate';
 
-import 'package:admob_flutter/admob_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:hours_tracker/HoursTableScreen.dart';
 import 'package:hours_tracker/SettingsScreen.dart';
@@ -157,9 +156,6 @@ class HomeScreen extends StatelessWidget {
                         onTap: () {
                           createExcel(context).then((result) async {
                             if (result) {
-                              await context
-                                  .read<HoursProvider>()
-                                  .showInterstitial(export: true);
                               _scaffoldState.currentState.showSnackBar(SnackBar(
                                 content: Text(AppLocalizations.of(context)
                                     .file_exported_text),
@@ -176,9 +172,6 @@ class HomeScreen extends StatelessWidget {
                             .export_excel_current_table_description),
                         onTap: () {
                           createExcel(context, true).then((result) {
-                            context
-                                .read<HoursProvider>()
-                                .showInterstitial(export: true);
                             if (result) {
                               _scaffoldState.currentState.showSnackBar(SnackBar(
                                 content: Text(AppLocalizations.of(context)
@@ -283,14 +276,6 @@ class HomeScreen extends StatelessWidget {
                               ),
                             ],
                           ),
-      ),
-      bottomNavigationBar: Container(
-        height: 65,
-        color: Colors.black12,
-        child: AdmobBanner(
-          adUnitId: AdmobBanner.testAdUnitId,
-          adSize: AdmobBannerSize.BANNER,
-        ),
       ),
     );
   }
