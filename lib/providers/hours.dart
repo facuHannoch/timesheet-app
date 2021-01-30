@@ -1,16 +1,19 @@
 // import 'dart:isolate';
-
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:hours_tracker/data/dayData.dart';
-import 'package:provider/provider.dart';
+
+import 'package:admob_flutter/admob_flutter.dart';
 
 import 'package:sqflite/sqflite.dart';
 
 const DEFAULT_ASCENDING = false;
+
+const ACTIONS_WITHOUT_ADS = 7;
+const EXPORTS_WITHOUT_ADS = 3;
 
 class HoursProvider with ChangeNotifier {
   Future<List> /* <List> */ hours = Future.value([]);
@@ -18,10 +21,17 @@ class HoursProvider with ChangeNotifier {
 
   List /* <DayData> */ currentList = [];
   int _currentMonth = DateTime.now().month;
-  int currentYear = DateTime.now().year;
+  int currentYear;
+
+  List listYears;
 
   bool _loadingData = true;
   bool _sortAscending = DEFAULT_ASCENDING;
+
+  AdmobInterstitial actionsInterstitial;
+  AdmobInterstitial exportInterstitial;
+  int actions = 0;
+  int exports = 0;
 
   HoursProvider() {
     hours = getData();
@@ -31,15 +41,74 @@ class HoursProvider with ChangeNotifier {
 
       loadingData = false;
     }).catchError((error) {
-      print("error");
-      print(error);
+      // print("error");
+      // print(error);
       loadingData = false;
-      hours = Future.value([]);
+      // hours = Future.value([]);
     });
+    allYears.then((allYears) {
+      // we have to intialize the value right now so we can use it.
+      currentYear = DateTime.now().year;
+
+      listYears = allYears;
+
+      // it is possible that the user has just created items in years which are not the currentOne. In that case we want to add that year to the list of year that will go in the DropdownButton.
+      // If we don't include this, the value of DropdownButton will be set to year that it is not in the list of values provided to the DropdownMenuItems, which will throw an error.
+      if (!listYears.contains(currentYear)) {
+        listYears.insert(0, currentYear);
+      }
+      listYears.sort();
+    });
+    actionsInterstitial = AdmobInterstitial(
+        adUnitId: AdmobInterstitial.testAdUnitId,
+        listener: (AdmobAdEvent event, Map args) {
+          if (event == AdmobAdEvent.closed) {
+            actionsInterstitial.load();
+          }
+        });
+    exportInterstitial = AdmobInterstitial(
+        adUnitId: AdmobInterstitial.testAdUnitId,
+        listener: (AdmobAdEvent event, Map args) {
+          if (event == AdmobAdEvent.closed) {
+            exportInterstitial.load();
+          }
+        });
+    actionsInterstitial.load();
+    exportInterstitial.load();
+
     // getData().then((data) {
     //   hours = data;
     //   notifyListeners();
     // });
+  }
+
+  // **********************
+  // ads related stuff
+
+  showInterstitial({export = false}) async {
+    if (export) {
+      if (await exportInterstitial.isLoaded &&
+          (exports == 0 || exports % EXPORTS_WITHOUT_ADS == 0)) {
+        exportInterstitial.show();
+        exports = 0;
+      } else {
+        exports++;
+      }
+    } else {
+      // it is very likely that the user just adds one record and then closes doen't create any more until he re-open the app.
+      if (await actionsInterstitial.isLoaded &&
+          (actions == 0 || actions > ACTIONS_WITHOUT_ADS)) {
+        actionsInterstitial.show();
+        actions = 1;
+      } else {
+        actions++;
+      }
+    }
+  }
+
+  disposeInterstitials() {
+    actionsInterstitial.dispose();
+    exportInterstitial.dispose();
   }
 
   // **********************
@@ -82,27 +151,20 @@ class HoursProvider with ChangeNotifier {
     hours.then(
       (List list) => (list /*  as List<DayData> */).add(day),
     );
-    // await hours.then((List hours) {
-    //   print("hours $hours");
-    //   print("day $day");
-    //   List<DayData> list = []..add(DayData(day.date, day.place, day.hours));
-    //   print("list $list");
-    //   hours = list;
-    //   hours = [day];
-    //   print("hours d $hours");
-    //   notifyListeners();
-    // });
+
+    if (!listYears.contains(day.date.year)) {
+      listYears.add(day.date.year);
+      listYears.sort();
+    }
+
     notifyListeners();
 
-    // print("hours dd ${await hours}");
     this.filterByMonth();
 
-    // saveData();
     saveItemData(day);
   }
 
   sortCurrentListByDay(bool ascending) async {
-    print("$ascending");
     // currentList.then((currentList) {
     // if (currentMonth == 0) {
     if (ascending) {
@@ -193,7 +255,6 @@ class HoursProvider with ChangeNotifier {
     notifyListeners();
 
     Future filteredList = compute<Map, List>(computeCallback, message);
-    // print("the filteredList ${await filteredList}");
 
     await filteredList.then((value) async {
       currentList = await filteredList;
@@ -219,9 +280,6 @@ class HoursProvider with ChangeNotifier {
     // );
 
     // Isolate.spawn((params) {}, 'Finished');
-
-    // s.stop();
-    // print("${s.elapsedMicroseconds}");
   }
 
   static FutureOr<List> computeCallback(Map message) async {
@@ -247,7 +305,6 @@ class HoursProvider with ChangeNotifier {
   // getting class info
 
   Future<DayData> getItem(DateTime date) async {
-    // return DayData(DateTime.now(), [HoursClass(4, 5)]);
     return (await hours)?.firstWhere((item) =>
         item.date.year == date.year &&
         item.date.month == date.month &&
@@ -257,38 +314,30 @@ class HoursProvider with ChangeNotifier {
 
   currentListTotal(defaultPrice) {
     double total = 0;
-    // currentList?.then((currentList) {
     for (var item in currentList) {
       total += item.totalHours * (item.pricePerHour ?? defaultPrice ?? 0);
     }
-    // });
     return total;
   }
 
   get currentListTotalHours {
     double totalHours = 0;
-    // currentList?.then((currentList) {
     for (var item in currentList) {
       totalHours += item.totalHours;
     }
-    // });
     return totalHours;
   }
 
-  // get total {
-  //   double total = 0;
-  //   for (var item in hours) {
-  //     total += item.totalHours * (item.pricePerHour ?? 0);
-  //   }
-  //   return total;
-  // }
-
-  // get totalHours {
-  //   double totalHours = 0;
-  //   for (var item in hours) {
-  //     totalHours += item.totalHours;
-  //   }
-  //   return totalHours;
+  // List get allYearsSync {
+  //   List<int> years = [];
+  //   hours.then((hours) {
+  //     hours.forEach((item) {
+  //       if (!years.contains(item.date.year)) {
+  //         years.add(item.date.year);
+  //       }
+  //     });
+  //   });
+  //   return years;
   // }
 
   Future<List> get allYears async {
@@ -372,8 +421,6 @@ class HoursProvider with ChangeNotifier {
   }
 
   saveEditedItem(DateTime oldDataItem, DayData item) {
-    // String stringDate =
-    //     "${item.date.year}-${item.date.month.toString().padLeft(2, '0')}-${item.date.day.toString().padLeft(2, '0')}";
     db.update(
         'hours',
         {
@@ -386,19 +433,12 @@ class HoursProvider with ChangeNotifier {
         where: "date = \"${item.formattedDate}\""
         // "date = \"date(${item.date.year} - ${item.date.month} - ${item.date.day})\"",
         );
-    // update hours
-// set date = date("2021-01-28"), schedule = "PEPE, 2", workplace = "String", priceperhour = 50, notes = "house"
-// where date = date("2021-01-28");
   }
 
   deleteData(DateTime date) async {
     // String path = await getDatabasesPath();
     String formattedDate =
         "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
-
-    // db.execute("BEGIN TRANSACTION");
-    // db.execute("DELETE FROM hours WHERE date = DATE(\"2021-01-03\")");
-    // db.execute("COMMIT");
 
     // db.execute("DELETE FROM hours WHERE date = DATE(\"$formattedDate\")");
 
@@ -433,9 +473,9 @@ class HoursProvider with ChangeNotifier {
     // });
   }
 
-  saveData() async {
-    String path = await getDatabasesPath();
-  }
+  // saveData() async {
+  //   String path = await getDatabasesPath();
+  // }
 
   Future<List> getData() async {
     await instantiateDatabase();
@@ -446,12 +486,11 @@ class HoursProvider with ChangeNotifier {
       print(e);
     }
 
-    // print(list);
-
     // List<DayData> dataList =
     //     list.map((registry) => DayData.fromMap(registry)).toList();
 
     List<DayData> dataList = [];
+    // In the test done, sometimes a null date was obtained. Ideally this won't happen in production. But if it does, it is better to lost that one registry than crash the entire application, so we just don't add it to the list.
     list.forEach((registry) {
       if (registry["date"] != null) {
         dataList.add(DayData.fromMap(registry));
@@ -460,19 +499,11 @@ class HoursProvider with ChangeNotifier {
 
     return dataList;
 
-    return Future.value(testList);
+    // return Future.value(testList);
   }
 
   instantiateDatabase() async {
     String path = await getDatabasesPath();
-    // String createdbQuery = "CREATE TABLE hours(" +
-    //     "id INTEGER AUTO_INCREMENT PRIMARY KEY, " +
-    //     "date DATE NOT NULL, " +
-    //     "schedule TEXT NOT NULL, " +
-    //     "workplace TEXT, " +
-    //     "pricePerHour REAL, " +
-    //     "notes TEXT" +
-    //     ")";
     String createdbQuery = """
     CREATE TABLE hours(
       date DATE PRIMARY KEY, 
@@ -491,8 +522,8 @@ class HoursProvider with ChangeNotifier {
     db.execute("DROP TABLE hours");
     db.execute(createdbQuery);
 
-    for (var a = 0; a < 100; a++) {
-      for (var j = 0; j < 12; j++) {
+    for (var a = 0; a < 1; a++) {
+      for (var j = 0; j < 1; j++) {
         for (var i = 0; i < (j == 2 ? 28 : 30); i++) {
           String insertData = """
     INSERT into hours (date, schedule, workplace, notes)
@@ -508,10 +539,10 @@ class HoursProvider with ChangeNotifier {
       }
     }
 */
-    List list = await db.rawQuery("SELECT * FROM hours");
+    // List list = await db.rawQuery("SELECT * FROM hours");
   }
 }
-
+/*
 List<DayData> testList = [
   DayData(
     DateTime.parse('2020-03-20'),
@@ -640,4 +671,5 @@ List<DayData> testList2 = [
     ),
   ),
 ];
+*/
 */

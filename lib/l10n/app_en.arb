@@ -1,10 +1,10 @@
 {
     "@@locale": "en",
 
-    "app_name": "Dice",
+    "app_name": "Hours Tracker",
     "@app_name": {},
 
-    "app_title": "Dice Roll",
+    "app_title": "Hours Tracker",
     "@app_title": {},
 
     "total": "Total",
@@ -43,6 +43,9 @@
     "current_filter_no_data": "No data",
     "@current_filter_no_data": {},
 
+    "price_per_hours_not_set": "The price per hour is not set. Go to configurations and set it.",
+    "@price_per_hours_not_set": {},
+
 
     "export_excel_tooltip": "Export Excel file",
     "@export_excel_tooltip": {},
@@ -53,6 +56,19 @@
     "settings_tooltip": "Settings",
     "@settings_tooltip": {},
     
+    "export_excel_title": "Export Excel file",
+    "@export_excel_title": {},
+
+    "export_excel_full_table": "Export all data",
+    "@export_excel_full_table": {},
+
+    "export_excel_current_table": "Export just current list",
+    "@export_excel_current_table": {},
+    "export_excel_current_table_description": "This will export just the current list (with the month and year selected)",
+    "@export_excel_current_table_description": {},
+
+    "file_location_label": "The file will be saved in",
+    "@file_location_label": {},
 
 
 
@@ -79,6 +95,13 @@
 
     "table_delete_label": "Delete",
     "@table_delete_label": {},
+
+    "table_notes_label": "Notes",
+    "@table_notes_label": {},
+
+
+    "file_exported_text": "File exported. The file is saved in the location previously mentioned.",
+    "@file_exported_text": {},
 
 
 

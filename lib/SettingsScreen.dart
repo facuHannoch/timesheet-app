@@ -91,7 +91,7 @@ class SettingsScreen extends StatelessWidget {
           ),
           ListTile(
             title: Text(AppLocalizations.of(context).give_feedback),
-            subtitle: Text(AppLocalizations.of(context).give_feedback),
+            subtitle: Text(AppLocalizations.of(context).give_feedback_description),
             onTap: () async {
               // http.get();
               Email email = Email(

@@ -94,95 +94,104 @@ class _NewItemScreenState extends State<NewItemScreen> {
                   title: AppLocalizations.of(context).new_item_date_label_title,
                   // description: "Date format: yyyy-mm-dd",
                 ),
-                Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: <Widget>[
-                      DropdownButton(
-                        value: date.day,
-                        onChanged: (newValue) {
-                          setState(() {
-                            date =
-                                DateTime.utc(date.year, date.month, newValue);
-                            context
-                                .read<HoursProvider>()
-                                .allDaysInCurrentYearAndMonth(
-                                    date.year, date.month)
-                                .then((value) {
-                              if (value.contains(newValue)) {
-                                dayTaken = true;
-                              } else {
-                                dayTaken = false;
-                              }
-                            });
-                            // maxDay = 0;
-                            // date = newValue;
-                          });
-                        },
-                        items: List.generate(
-                          maxDay,
-                          (index) => DropdownMenuItem(
-                            child: Text((index + 1).toString()),
-                            value: index + 1,
-                          ),
+                // We currently don't want the user to be able to change the date when editing an existing item, so when the user is editing some record, we will just show a text with the item's date.
+                oldItemDate != null
+                    ? Container(
+                        padding: EdgeInsets.symmetric(vertical: 16),
+                        child: Text(
+                          "${date.year} - ${date.month} - ${date.day}",
+                          style: Theme.of(context).textTheme.headline5,
                         ),
-                      ),
-                      DropdownButton(
-                          value: date.month,
-                          onChanged: (newValue) {
-                            setState(() {
-                              date =
-                                  DateTime.utc(date.year, newValue, date.day);
-                              context
-                                  .read<HoursProvider>()
-                                  .allMonthsInCurrentYear(date.year)
-                                  .then((value) {
-                                if (value.contains(newValue)) {
-                                  monthTaken = true;
-                                } else {
-                                  monthTaken = false;
-                                }
-                              });
-                              // date.month = newValue;
-                            });
-                          },
-                          items: List.generate(
-                            12,
-                            (index) => DropdownMenuItem(
-                              child: Text((index + 1).toString()),
-                              value: index + 1,
+                      )
+                    : Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: <Widget>[
+                            DropdownButton(
+                              value: date.day,
+                              onChanged: (newValue) {
+                                setState(() {
+                                  date = DateTime.utc(
+                                      date.year, date.month, newValue);
+                                  context
+                                      .read<HoursProvider>()
+                                      .allDaysInCurrentYearAndMonth(
+                                          date.year, date.month)
+                                      .then((value) {
+                                    if (value.contains(newValue)) {
+                                      dayTaken = true;
+                                    } else {
+                                      dayTaken = false;
+                                    }
+                                  });
+                                  // maxDay = 0;
+                                  // date = newValue;
+                                });
+                              },
+                              items: List.generate(
+                                maxDay,
+                                (index) => DropdownMenuItem(
+                                  child: Text((index + 1).toString()),
+                                  value: index + 1,
+                                ),
+                              ),
                             ),
-                          )),
-                      DropdownButton(
-                          value: date.year,
-                          onChanged: (newValue) {
-                            setState(() {
-                              date =
-                                  DateTime.utc(newValue, date.month, date.day);
-                              context
-                                  .read<HoursProvider>()
-                                  .allYears
-                                  .then((value) {
-                                if (value.contains(newValue)) {
-                                  yearTaken = true;
-                                } else {
-                                  yearTaken = false;
-                                }
-                              });
+                            DropdownButton(
+                                value: date.month,
+                                onChanged: (newValue) {
+                                  setState(() {
+                                    date = DateTime.utc(
+                                        date.year, newValue, date.day);
+                                    context
+                                        .read<HoursProvider>()
+                                        .allMonthsInCurrentYear(date.year)
+                                        .then((value) {
+                                      if (value.contains(newValue)) {
+                                        monthTaken = true;
+                                      } else {
+                                        monthTaken = false;
+                                      }
+                                    });
+                                    // date.month = newValue;
+                                  });
+                                },
+                                items: List.generate(
+                                  12,
+                                  (index) => DropdownMenuItem(
+                                    child: Text((index + 1).toString()),
+                                    value: index + 1,
+                                  ),
+                                )),
+                            DropdownButton(
+                                value: date.year,
+                                onChanged: (newValue) {
+                                  setState(() {
+                                    date = DateTime.utc(
+                                        newValue, date.month, date.day);
+                                    context
+                                        .read<HoursProvider>()
+                                        .allYears
+                                        .then((value) {
+                                      if (value.contains(newValue)) {
+                                        yearTaken = true;
+                                      } else {
+                                        yearTaken = false;
+                                      }
+                                    });
 
-                              // date.month = newValue;
-                            });
-                          },
-                          items: List.generate(
-                            DateTime.now().year - 1900,
-                            (index) {
-                              return DropdownMenuItem(
-                                child: Text(
-                                    (DateTime.now().year - index).toString()),
-                                value: DateTime.now().year - index,
-                              );
-                            },
-                          ))
-                    ]),
+                                    // date.month = newValue;
+                                  });
+                                },
+                                items: List.generate(
+                                  DateTime.now().year - 1900,
+                                  (index) {
+                                    return DropdownMenuItem(
+                                      child: Text((DateTime.now().year - index)
+                                          .toString()),
+                                      value: DateTime.now().year - index,
+                                    );
+                                  },
+                                ))
+                          ]),
                 // TextFormField(
                 //   controller: _dayController,
                 //   keyboardType: TextInputType.datetime,
@@ -196,27 +205,6 @@ class _NewItemScreenState extends State<NewItemScreen> {
                 //     return null;
                 //   },
                 // ),
-                InputsDescription(
-                  title:
-                      AppLocalizations.of(context).new_item_place_label_title,
-                  // description: "Can be empty",
-                ),
-                TextFormField(
-                  controller: _placeController,
-                  decoration: InputDecoration(labelText: ""),
-                  maxLength: 30,
-                  maxLengthEnforced: true,
-                  validator: (value) {
-                    int nChars = value.toString().length;
-                    if (value != null) {
-                      if (nChars > 30 || nChars < 0) {
-                        return AppLocalizations.of(context).max_characters +
-                            30.toString();
-                      }
-                    }
-                    return null;
-                  },
-                ),
                 InputsDescription(
                   title:
                       AppLocalizations.of(context).new_item_hours_label_title,
@@ -341,6 +329,28 @@ class _NewItemScreenState extends State<NewItemScreen> {
                   },
                 ),
                 InputsDescription(
+                  title:
+                      AppLocalizations.of(context).new_item_place_label_title,
+                  // description: "Can be empty",
+                ),
+                TextFormField(
+                  controller: _placeController,
+                  decoration: InputDecoration(labelText: ""),
+                  maxLength: 30,
+                  maxLengthEnforced: true,
+                  validator: (value) {
+                    int nChars = value.toString().length;
+                    if (value != null) {
+                      if (nChars > 30 || nChars < 0) {
+                        return AppLocalizations.of(context).max_characters +
+                            30.toString();
+                      }
+                    }
+                    return null;
+                  },
+                ),
+
+                InputsDescription(
                   title: AppLocalizations.of(context)
                       .new_item_price_per_hour_label_title,
                   // description: "(optional)",
@@ -435,37 +445,7 @@ class _NewItemScreenState extends State<NewItemScreen> {
                           yearTaken = false;
                         }
 
-                        // await context
-                        //     .read<HoursProvider>()
-                        //     .allDaysInCurrentYearAndMonth(date.year, date.month)
-                        //     .then((value) {
-                        //   if (value.contains(date.day)) {
-                        //     dayTaken = true;
-                        //   }
-                        // });
-                        // await context
-                        //     .read<HoursProvider>()
-                        //     .allMonthsInCurrentYear(date.year)
-                        //     .then((value) {
-                        //   if (value.contains(date.month)) {
-                        //     monthTaken = true;
-                        //   }
-                        // });
-                        // await context.read<HoursProvider>().allYears.then((value) {
-                        //   if (value.contains(date.year)) {
-                        //     yearTaken = true;
-                        //   }
-                        // });
-
-                        // bool sameOldDate = date.year == oldItemDate.year;
                         bool sameOldDate = date == oldItemDate;
-
-                        // print("\n\n\n");
-                        // print("daytaken $dayTaken");
-                        // print("monthTaken $monthTaken");
-                        // print("yearTaken $yearTaken");
-                        // print("date $date");
-                        // print("\n\n\n");
 
                         if (yearTaken &&
                             monthTaken &&
@@ -523,7 +503,6 @@ class _NewItemScreenState extends State<NewItemScreen> {
                             pricePerHour: pricePerHour,
                             notes: notes,
                           );
-
                           if (oldItemDate == null) {
                             context.read<HoursProvider>().addNewItem(newItem);
                             Navigator.pop(context);
@@ -533,6 +512,7 @@ class _NewItemScreenState extends State<NewItemScreen> {
                                 .editItem(oldItemDate, newItem);
                             Navigator.pop(context);
                           }
+                          context.read<HoursProvider>().showInterstitial();
                         }
                       },
                     ),
