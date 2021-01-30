@@ -9,6 +9,8 @@
 .history
 .svn/
 folder/
+*.jks
+cronometro.js
 
 # IntelliJ related
 *.iml

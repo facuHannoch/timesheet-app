@@ -1,3 +1,4 @@
+import 'package:admob_flutter/admob_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hours_tracker/providers/hours.dart';
@@ -8,7 +9,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-const DEFAULT_COLOR_VALUE = Colors.red;
+const DEFAULT_COLOR_VALUE = Colors.blueAccent;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,7 +17,7 @@ void main() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   int appPrimaryColor = prefs.getInt("appPrimaryColor") ?? DEFAULT_COLOR_VALUE.value;
 
-  // Admob.initialize();
+  Admob.initialize();
 
   runApp(App(appPrimaryColor: appPrimaryColor));
 }
@@ -58,9 +59,20 @@ class App extends StatelessWidget {
   }
 }
 
-class App2 extends StatelessWidget {
+class App2 extends StatefulWidget {
+  @override
+  _App2State createState() => _App2State();
+}
+
+class _App2State extends State<App2> {
   @override
   Widget build(BuildContext context) {
     return HomeScreen();
+  }
+
+  @override
+  void dispose() {
+    context.read<HoursProvider>().disposeInterstitials();
+    super.dispose();
   }
 }

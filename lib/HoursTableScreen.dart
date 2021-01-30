@@ -10,13 +10,8 @@ class HoursTableScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     bool isAscending = context.watch<HoursProvider>().sortAscending;
-    // print("list ${context.read<HoursProvider>().hours}");
-    // return Consumer<HoursProvider>(
-    //   builder: (context, value, child) =>
     List hours =
         context.watch<HoursProvider>().currentList /*  ?? Future.value([]) */;
-    // HoursProvider.currentList
-    // hours = Future.value([]);
     return hours.isEmpty
         ? Container(
             height: 300,
@@ -100,9 +95,6 @@ class HoursTableScreen extends StatelessWidget {
                   rows: hours
                       .map<DataRow>(
                         (dayData) => DataRow(
-                          // onSelectChanged: (value) {
-                          //   print("$value");
-                          // },
                           cells: [
                             DataCell(Text("${dayData.day} - ${dayData.month}")),
                             DataCell(Text(dayData.getDayName(context))),
@@ -153,7 +145,6 @@ class HoursTableScreen extends StatelessWidget {
                             DataCell(IconButton(
                                 icon: Icon(Icons.delete),
                                 onPressed: () {
-                                  print("${dayData.date}");
                                   context
                                       .read<HoursProvider>()
                                       .deleteItem(dayData.date);

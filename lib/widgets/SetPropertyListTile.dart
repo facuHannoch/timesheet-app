@@ -44,7 +44,8 @@ class _SetPropertyListTileState extends State<SetPropertyListTile> {
                         Text(AppLocalizations.of(context).alert_input_accept),
                     onPressed: () async {
                       context.read<ConfigurationProvider>().pricePerHour =
-                          double.tryParse(controller.text);
+                          double.tryParse(controller.text) ?? 0;
+                          // if the users enters a invalid value (just dots, for example), when we tryParse it, the result will be null. In that case, we will just set the variable to 0 again.
                       Navigator.pop(context);
                     },
                   ),

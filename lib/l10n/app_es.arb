@@ -1,10 +1,10 @@
 {
     "@@locale": "es",
 
-    "app_name": "Dado",
+    "app_name": "Hours Tracker",
     "@app_name": {},
 
-    "app_title": "Tirada de Dados",
+    "app_title": "Hours Tracker",
     "@app_title": {},
 
     "total": "Total",
@@ -43,6 +43,9 @@
     "current_filter_no_data": "Sin datos",
     "@current_filter_no_data": {},
 
+    "price_per_hours_not_set": "Ve a configuración y define el precio por hora para empezar a ver los registros.",
+    "@price_per_hours_not_set": {},
+
 
     "export_excel_tooltip": "Exportar archivo Excel",
     "@export_excel_tooltip": {},
@@ -53,6 +56,19 @@
     "settings_tooltip": "Configuración",
     "@settings_tooltip": {},
     
+    "export_excel_title": "Exportar archivo Excel",
+    "@export_excel_title": {},
+
+    "export_excel_full_table": "Exportar toda la información",
+    "@export_excel_full_table": {},
+
+    "export_excel_current_table": "Exportar sólo la lista actual",
+    "@export_excel_current_table": {},
+    "export_excel_current_table_description": "Esto exportará sólo la lista actual (con el mes y año seleccionados)",
+    "@export_excel_current_table_description": {},
+
+    "file_location_label": "El archivo será guardado en",
+    "@file_location_label": {},
     
 
 
@@ -79,6 +95,13 @@
 
     "table_delete_label": "Borrar",
     "@table_delete_label": {},
+
+    "table_notes_label": "Notas",
+    "@table_notes_label": {},
+
+
+    "file_exported_text": "Archivo exportado. El archivo ha sido almacenado en la dirección antes mencionada.",
+    "@file_exported_text": {},
 
 
 
@@ -174,7 +197,7 @@
     "give_feedback_description": "Dinos que piensas de nuestra app o alguna sugerencia que tengas",
     "@give_feedback_description": {},
 
-    "follow_us_instagram": "Síguenos en Instagrram",
+    "follow_us_instagram": "Síguenos en Instagram",
     "@follow_us_instagram": {},
     "follow_us_instagram_description": "Sé el primero en saber de nuevas aplicaciones y actualizaciones",
     "@follow_us_instagram_description": {},

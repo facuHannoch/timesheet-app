@@ -23,11 +23,9 @@ class DayData {
     // if (data["date"] == null) {
     //   return null;
     // }
-    print(data["date"]);
     List<int> dates =
         data["date"].split('-').map<int>((value) => int.parse(value)).toList();
     // the first is the year, the second the month and the third the day
-    // int = dates[1].toString().padLeft(2)
     DateTime date = DateTime.utc(dates[0], dates[1], dates[2]);
 
     List<HoursClass> schedule = hoursFromString(data["schedule"]);
