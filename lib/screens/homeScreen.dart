@@ -1,12 +1,12 @@
 import 'dart:io';
-import 'dart:isolate';
+// import 'dart:isolate';
 
 import 'package:flutter/material.dart';
-import 'package:hours_tracker/HoursTableScreen.dart';
-import 'package:hours_tracker/SettingsScreen.dart';
-import 'package:hours_tracker/providers/configuration.dart';
-import 'package:hours_tracker/providers/hours.dart';
-import 'package:hours_tracker/screens/NewItemScreen.dart';
+import 'package:timesheet/HoursTableScreen.dart';
+import 'package:timesheet/SettingsScreen.dart';
+import 'package:timesheet/providers/configuration.dart';
+import 'package:timesheet/providers/hours.dart';
+import 'package:timesheet/screens/NewItemScreen.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -171,7 +171,7 @@ class HomeScreen extends StatelessWidget {
                         subtitle: Text(AppLocalizations.of(context)
                             .export_excel_current_table_description),
                         onTap: () {
-                          createExcel(context, true).then((result) {
+                          createExcel(context, true).then((result) async {
                             if (result) {
                               _scaffoldState.currentState.showSnackBar(SnackBar(
                                 content: Text(AppLocalizations.of(context)
@@ -187,7 +187,7 @@ class HomeScreen extends StatelessWidget {
                         height: 11.4,
                       ),
                       Text(
-                          "${AppLocalizations.of(context).file_location_label}:\n storage/emulated/0/Android/data/com.appneft.hours_tracker/files",
+                          "${AppLocalizations.of(context).file_location_label}:\n storage/emulated/0/Android/data/com.appneft.timesheet/files",
                           style: TextStyle(fontSize: 12))
                     ],
                   ),

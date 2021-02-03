@@ -1,10 +1,10 @@
 {
     "@@locale": "en",
 
-    "app_name": "Hours Tracker",
+    "app_name": "Timesheet",
     "@app_name": {},
 
-    "app_title": "Hours Tracker",
+    "app_title": "Timesheet",
     "@app_title": {},
 
     "total": "Total",

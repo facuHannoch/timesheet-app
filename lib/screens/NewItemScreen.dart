@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:hours_tracker/data/dayData.dart';
-import 'package:hours_tracker/providers/configuration.dart';
-import 'package:hours_tracker/providers/hours.dart';
+import 'package:timesheet/data/dayData.dart';
+import 'package:timesheet/providers/configuration.dart';
+import 'package:timesheet/providers/hours.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'package:provider/provider.dart';
@@ -138,9 +138,26 @@ class _NewItemScreenState extends State<NewItemScreen> {
                             DropdownButton(
                                 value: date.month,
                                 onChanged: (newValue) {
+                                  // if, for example, the selected day was 31 and the user selects the month 2, we would create a date that is 2021/02/31, which doen't exists, so the month will be set to 3, in order to accommodate the date.
+                                  // To fix this, we check if the current day it's the same as the last day in the month, and if it is, the we set the day to the corresponding last day of the new month.
+                                  int day = date.day;
+                                  if (day >= maxDay) {
+                                    if ([4, 6, 9, 11].contains(newValue)) {
+                                      day = 30;
+                                    } else if ([1, 3, 5, 7, 8, 10, 12]
+                                        .contains(newValue)) {
+                                      day = 31;
+                                    } else if (newValue == 2) {
+                                      if (date.year % 4 == 0) {
+                                        day = 29;
+                                      } else {
+                                        day = 28;
+                                      }
+                                    }
+                                  }
                                   setState(() {
-                                    date = DateTime.utc(
-                                        date.year, newValue, date.day);
+                                    date =
+                                        DateTime.utc(date.year, newValue, day);
                                     context
                                         .read<HoursProvider>()
                                         .allMonthsInCurrentYear(date.year)
@@ -505,13 +522,12 @@ class _NewItemScreenState extends State<NewItemScreen> {
                           );
                           if (oldItemDate == null) {
                             context.read<HoursProvider>().addNewItem(newItem);
-                            Navigator.pop(context);
                           } else {
                             context
                                 .read<HoursProvider>()
                                 .editItem(oldItemDate, newItem);
-                            Navigator.pop(context);
                           }
+                          Navigator.pop(context);
                         }
                       },
                     ),

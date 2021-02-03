@@ -4,7 +4,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-import 'package:hours_tracker/data/dayData.dart';
+import 'package:timesheet/data/dayData.dart';
 
 import 'package:sqflite/sqflite.dart';
 
@@ -54,9 +54,6 @@ class HoursProvider with ChangeNotifier {
     //   notifyListeners();
     // });
   }
-
-  // **********************
-  // ads related stuff
 
   // **********************
   // list and items edition

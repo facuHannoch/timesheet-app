@@ -1,4 +1,4 @@
-package com.appneft.hours_tracker
+package com.appneft.timesheet
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hours_tracker/providers/configuration.dart';
+import 'package:timesheet/providers/configuration.dart';
 
 import 'package:provider/provider.dart';
 
