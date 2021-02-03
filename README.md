@@ -1,4 +1,4 @@
-# hours_tracker
+# timesheet
 
 A new Flutter project.
 

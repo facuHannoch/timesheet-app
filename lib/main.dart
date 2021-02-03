@@ -1,9 +1,9 @@
 import 'package:admob_flutter/admob_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:hours_tracker/providers/hours.dart';
-import 'package:hours_tracker/providers/configuration.dart';
-import 'package:hours_tracker/screens/homeScreen.dart';
+import 'package:timesheet/providers/hours.dart';
+import 'package:timesheet/providers/configuration.dart';
+import 'package:timesheet/screens/homeScreen.dart';
 
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -48,7 +48,7 @@ class App extends StatelessWidget {
           const Locale('en', ''),
           const Locale('es', ''),
         ],
-        title: 'Hours Tracker',
+        title: 'Timesheet',
         theme: ThemeData(
           primaryColor:
               Color(context.watch<ConfigurationProvider>().appPrimaryColor),

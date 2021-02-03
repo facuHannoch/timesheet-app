@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:hours_tracker/providers/configuration.dart';
-import 'package:hours_tracker/widgets/SetPropertyListTile.dart';
+import 'package:timesheet/providers/configuration.dart';
+import 'package:timesheet/widgets/SetPropertyListTile.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
 // import 'package:shared_preferences/shared_preferences.dart';
@@ -95,7 +95,7 @@ class SettingsScreen extends StatelessWidget {
             onTap: () async {
               // http.get();
               Email email = Email(
-                subject: "Hours Tracker",
+                subject: "Timesheet",
                 recipients: ["contact.appneft@gmail.com"],
                 isHTML: false,
               );

@@ -4,7 +4,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-import 'package:hours_tracker/data/dayData.dart';
+import 'package:timesheet/data/dayData.dart';
 
 import 'package:admob_flutter/admob_flutter.dart';
 
@@ -13,7 +13,7 @@ import 'package:sqflite/sqflite.dart';
 const DEFAULT_ASCENDING = false;
 
 const ACTIONS_WITHOUT_ADS = 7;
-const EXPORTS_WITHOUT_ADS = 2;
+const EXPORTS_WITHOUT_ADS = 3;
 
 class HoursProvider with ChangeNotifier {
   Future<List> /* <List> */ hours = Future.value([]);
